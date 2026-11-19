@@ -1,0 +1,9 @@
+{
+    "name": "pawsitive/pethub",
+    "description": "A web application for pet adoption management.",
+    "autoload": {
+        "psr-4": {
+            "App\\": "App/"
+        }
+    }
+}

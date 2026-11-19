@@ -1,0 +1,13 @@
+{
+    "devDependencies": {
+        "@tailwindcss/cli": "^4.3.5",
+        "browser-sync": "^3.0.4",
+        "concurrently": "^10.0.7",
+        "tailwindcss": "^4.3.5"
+    },
+    "scripts": {
+        "dev": "concurrently \"npm run tailwind\" \"npm run sync\"",
+        "tailwind": "npx @tailwindcss/cli -i public/src/input.css -o public/src/output.css --watch",
+        "sync": "browser-sync start --proxy \"http://localhost/Pawsitive/public\" --files \"public/**/*\""
+    }
+}

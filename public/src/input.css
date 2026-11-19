@@ -1,0 +1,144 @@
+@import "tailwindcss";
+
+/* Scan PHP files for Tailwind classes */
+@source "../**/*.php";
+
+@font-face {
+    font-family: "Unbounded";
+    src: url("../assets/font/Unbounded.woff2") format("woff2");
+    font-weight: 200 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+@theme {
+    --font-primary: "Unbounded", sans-serif;
+}
+
+@layer base {
+    body {
+        @apply font-primary;
+    }
+}
+
+@theme {
+    /* :: START BRAND COLORS */
+    --color-primary: #02c6d8;
+    --color-primary-hover: #19a0a0;
+
+    --color-secondary: #ffcc00;
+    --color-secondary-hover: #ecc00e;
+
+    --color-tertiary: #f85601;
+    --color-tertiary-hover: #d94320;
+
+    --color-accent: #ff9a70;
+    --color-accent-hover: #f17f55;
+    /* :: END BRAND COLORS */
+
+    /* :: START TEXT COLORS */
+    --color-text: #333;
+    --color-text-hover: #111c20;
+
+    --color-muted: #757e7e;
+    --color-muted-hover: #596565;
+    /* :: END TEXT COLORS */
+
+    /* :: START SURFACE COLORS */
+    --color-border: #e7e5df;
+    --color-border-hover: #d4d0c7;
+
+    --color-background: #fff9f0;
+    --color-background-hover: #fff3e4;
+
+    --color-card-outer: #ffffff;
+    --color-card-outer-hover: #fffdf8;
+
+    --color-card-inner: #fff4e5;
+    --color-card-inner-hover: #ffebd3;
+    /* :: END SURFACE COLORS */
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@theme {
+    --animate-scroll-fade-up: scroll-fade-up 0.8s ease both;
+    --animate-scroll-fade-left: scroll-fade-left 0.8s ease both;
+    --animate-scroll-fade-right: scroll-fade-right 0.8s ease both;
+    --animate-scroll-zoom-in: scroll-zoom-in 0.8s ease both;
+
+    @keyframes scroll-fade-up {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    @keyframes scroll-fade-left {
+        from {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    @keyframes scroll-fade-right {
+        from {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    @keyframes scroll-zoom-in {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+}
+
+@layer utilities {
+    /* Ito yung magiging utility mo - pag nag-scroll, saka lang sya mag-aanimate */
+    .animate-scroll-fade-up {
+        animation: var(--animate-scroll-fade-up);
+        animation-timeline: view();
+        animation-range: entry 0% cover 30%;
+    }
+    .animate-scroll-fade-left {
+        animation: var(--animate-scroll-fade-left);
+        animation-timeline: view();
+        animation-range: entry 0% cover 30%;
+    }
+    .animate-scroll-fade-right {
+        animation: var(--animate-scroll-fade-right);
+        animation-timeline: view();
+        animation-range: entry 0% cover 30%;
+    }
+    .animate-scroll-zoom-in {
+        animation: var(--animate-scroll-zoom-in);
+        animation-timeline: view();
+        animation-range: entry 0% cover 30%;
+    }
+}
