@@ -374,9 +374,6 @@
   .z-1000000 {
     z-index: 1000000;
   }
-  .z-\[1000000\] {
-    z-index: 1000000;
-  }
   .order-1 {
     order: 1;
   }
@@ -529,6 +526,9 @@
   }
   .inline-flex {
     display: inline-flex;
+  }
+  .table {
+    display: table;
   }
   .aspect-4\/4 {
     aspect-ratio: 4/4;

@@ -1,8 +1,6 @@
 <?php
 namespace App\Model;
 use App\Config\Connection;
-use PDO;
-
 class Adoption_Pet
 {
     private ?Connection $connection = null;

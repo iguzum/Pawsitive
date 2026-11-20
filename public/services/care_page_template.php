@@ -53,11 +53,13 @@ if (!isset($carePage) || !is_array($carePage)) {
                 </p>
                 <div class="mt-8 flex flex-wrap items-center gap-3">
 
-                    <button data-modal-target="default-modal" data-modal-toggle="default-modal"
+                    <!-- :: START CARE MODAL HERO BUTTON -->
+                    <button data-modal-target="care-modal" data-modal-toggle="care-modal"
                         class="inline-flex items-center gap-2 rounded-xl bg-tertiary px-6 py-3.5 text-sm font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-primary">
                         Book now
                         <i class="bx bx-arrow-up-right text-lg" aria-hidden="true"></i>
                     </button>
+                    <!-- :: END CARE MODAL HERO BUTTON -->
 
                     <a href="#packages"
                         class="inline-flex items-center gap-2 rounded-xl border border-border bg-card-outer px-6 py-3.5 text-sm font-bold text-text transition hover:border-primary hover:text-primary">Explore
@@ -167,48 +169,116 @@ if (!isset($carePage) || !is_array($carePage)) {
                     </p>
                 </div>
 
-                <button data-modal-target="default-modal" data-modal-toggle="default-modal"
+                <!-- :: START CARE MODAL CTA BUTTON -->
+                <button data-modal-target="care-modal" data-modal-toggle="care-modal"
                     class="relative inline-flex w-fit shrink-0 items-center gap-2 rounded-xl bg-card-outer px-6 py-3.5 text-sm font-bold text-text transition hover:-translate-y-0.5 hover:bg-secondary"
                     type="button">
                     Request an appointment <i class="bx bx-arrow-up-right text-lg" aria-hidden="true"></i>
                 </button>
+                <!-- :: END CARE MODAL CTA BUTTON -->
 
-                <div id="default-modal" tabindex="-1" aria-hidden="true"
-                    class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full bg-text/50 backdrop-blur-sm">
-                    <div class="relative p-4 w-full max-w-2xl max-h-full">
-                        <!-- Modal content -->
-                        <div class="relative bg-card-outer border border-border rounded-2xl shadow-xl p-4 md:p-6">
-                            <!-- Modal header -->
-                            <div class="flex items-center justify-between border-b border-border pb-4 md:pb-5">
-                                <h3 class="text-lg font-primary font-semibold text-text uppercase">
-                                    <?= htmlspecialchars($carePage['shortName'], ENT_QUOTES, 'UTF-8') ?>
-                                </h3>
-                                <button type="button"
-                                    class="text-muted bg-transparent hover:bg-card-inner hover:text-text rounded-xl text-sm w-12 h-12 border border-gray-300/70 ms-auto inline-flex justify-center items-center"
-                                    data-modal-hide="default-modal">
-                                    <i class="bx bx-x text-2xl text-tertiary"></i>
-                                    <span class="sr-only">Close modal</span>
-                                </button>
+                <!-- :: START CARE APPOINTMENT MODAL -->
+                <div id="care-modal" aria-hidden="true" role="dialog" aria-modal="true"
+                    aria-labelledby="care-modal-title"
+                    class="hidden fixed inset-0 z-1000000 items-center justify-center overflow-y-auto bg-text/60 p-4 backdrop-blur-sm">
+                    <div class="relative my-auto w-full max-w-2xl rounded-3xl border border-border bg-card-outer p-5 shadow-2xl sm:p-8">
+                        <div class="mb-6 flex items-start justify-between gap-4 border-b border-border pb-5">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-[0.18em] text-tertiary">Pet care appointment</p>
+                                <h2 id="care-modal-title" class="mt-2 text-2xl font-bold text-text sm:text-3xl">Register the Pet</h2>
+                                <p class="mt-2 text-sm text-muted">Step <span id="care-step-number">1</span> of 2</p>
                             </div>
-                            <!-- Modal body -->
-                            <div class="space-y-4 md:space-y-6 py-4 md:py-6 font-primary">
-                                <p class="leading-relaxed text-muted">
-                                    lorem
-                                </p>
-                                <p class="leading-relaxed text-muted">
-                                    lorem
-                                </p>
-                                <p class="leading-relaxed text-muted">
-                                    lorem
-                                </p>
-                            </div>
-                            <!-- Modal footer -->
-                            <div class="flex items-center border-t border-border space-x-4 pt-4 md:pt-5">
-                                <p class="text-xs text-muted">Pawsitive</p>
-                            </div>
+                            <button type="button" data-care-modal-close aria-label="Close pet registration"
+                                class="flex size-11 shrink-0 items-center justify-center rounded-xl border border-border text-muted transition hover:bg-card-inner hover:text-text">
+                                <i class="bx bx-x text-2xl" aria-hidden="true"></i>
+                            </button>
                         </div>
+
+                        <form id="care-request-form" method="post" novalidate>
+                            <input type="hidden" name="form_action" value="submit_care_request">
+
+                            <!-- :: START REGISTER PET STEP -->
+                            <section data-care-step="1">
+                                <div class="grid gap-5 sm:grid-cols-2">
+                                    <div class="sm:col-span-2">
+                                        <label for="care-pet-name" class="mb-2 block text-sm font-semibold text-text">Pet name</label>
+                                        <input id="care-pet-name" name="pet_name" type="text" maxlength="100" placeholder="Enter your pet's name" required
+                                            class="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-text outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-4 focus:ring-primary/10">
+                                    </div>
+                                    <div>
+                                        <label for="care-pet-species" class="mb-2 block text-sm font-semibold text-text">Species</label>
+                                        <select id="care-pet-species" name="species" required
+                                            class="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-text outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10">
+                                            <option value="" disabled selected>Select species</option>
+                                            <option value="Dog">Dog</option>
+                                            <option value="Cat">Cat</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="care-pet-breed" class="mb-2 block text-sm font-semibold text-text">Breed</label>
+                                        <input id="care-pet-breed" name="breed" type="text" maxlength="50" placeholder="Enter breed"
+                                            class="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-text outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-4 focus:ring-primary/10">
+                                    </div>
+                                    <div>
+                                        <label for="care-pet-age" class="mb-2 block text-sm font-semibold text-text">Age</label>
+                                        <input id="care-pet-age" name="age" type="number" min="0" max="255" inputmode="numeric" placeholder="Enter age" required
+                                            class="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-text outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-4 focus:ring-primary/10">
+                                    </div>
+                                    <div>
+                                        <label for="care-pet-sex" class="mb-2 block text-sm font-semibold text-text">Sex</label>
+                                        <select id="care-pet-sex" name="sex" required
+                                            class="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-text outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10">
+                                            <option value="" disabled selected>Select sex</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mt-8 flex justify-end">
+                                    <button type="button" id="care-next-step"
+                                        class="inline-flex items-center gap-2 rounded-xl bg-tertiary px-6 py-3 text-sm font-semibold text-white transition hover:bg-tertiary-hover">
+                                        Next <i class="bx bx-right-arrow-alt text-lg" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </section>
+                            <!-- :: END REGISTER PET STEP -->
+
+                            <!-- :: START APPOINTMENT DETAILS STEP -->
+                            <section data-care-step="2" class="hidden">
+                                <div class="grid gap-5 sm:grid-cols-2">
+                                    <div>
+                                        <label for="care-schedule-date" class="mb-2 block text-sm font-semibold text-text">Date to be scheduled</label>
+                                        <input id="care-schedule-date" name="schedule_date" type="date" required
+                                            class="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-text outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10">
+                                    </div>
+                                    <div>
+                                        <label for="care-service-id" class="mb-2 block text-sm font-semibold text-text">Care service</label>
+                                        <select id="care-service-id" name="service_id" required
+                                            class="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-text outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10">
+                                            <option value="" disabled selected>Select a service</option>
+                                            <option value="1">General</option>
+                                            <option value="2">Preventive</option>
+                                            <option value="3">Hygiene</option>
+                                            <option value="4">Diagnostic</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mt-8 flex flex-wrap justify-between gap-3">
+                                    <button type="button" id="care-previous-step"
+                                        class="rounded-xl border border-border bg-card-inner px-5 py-3 text-sm font-semibold text-text transition hover:bg-card-inner-hover">
+                                        Back
+                                    </button>
+                                    <button type="submit"
+                                        class="inline-flex items-center gap-2 rounded-xl bg-tertiary px-6 py-3 text-sm font-semibold text-white transition hover:bg-tertiary-hover">
+                                        Submit <i class="bx bx-check text-lg" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </section>
+                            <!-- :: END APPOINTMENT DETAILS STEP -->
+                        </form>
                     </div>
                 </div>
+                <!-- :: END CARE APPOINTMENT MODAL -->
 
                 <!-- :: END APPOINTMENT CTA AND MODAL -->
             </div>
@@ -223,9 +293,20 @@ if (!isset($carePage) || !is_array($carePage)) {
     <!-- :: END SHARED CARE PAGE FOOTER -->
 
     <script>
-        const appointmentModal = document.getElementById('default-modal');
+        // :: START CARE MODAL SCRIPT
+        const appointmentModal = document.getElementById('care-modal');
+        const careForm = document.getElementById('care-request-form');
+        const careSteps = Array.from(document.querySelectorAll('[data-care-step]'));
+        const careStepNumber = document.getElementById('care-step-number');
 
-        document.querySelectorAll('[data-modal-toggle="default-modal"]').forEach((button) => {
+        function showCareStep(step) {
+            careSteps.forEach((section) => {
+                section.classList.toggle('hidden', Number(section.dataset.careStep) !== step);
+            });
+            careStepNumber.textContent = String(step);
+        }
+
+        document.querySelectorAll('[data-modal-toggle="care-modal"]').forEach((button) => {
             button.addEventListener('click', () => {
                 appointmentModal.classList.remove('hidden');
                 appointmentModal.classList.add('flex');
@@ -233,7 +314,7 @@ if (!isset($carePage) || !is_array($carePage)) {
             });
         });
 
-        document.querySelectorAll('[data-modal-hide="default-modal"]').forEach((button) => {
+        document.querySelectorAll('[data-care-modal-close]').forEach((button) => {
             button.addEventListener('click', () => {
                 appointmentModal.classList.add('hidden');
                 appointmentModal.classList.remove('flex');
@@ -248,6 +329,50 @@ if (!isset($carePage) || !is_array($carePage)) {
                 appointmentModal.setAttribute('aria-hidden', 'true');
             }
         });
+
+        document.getElementById('care-next-step').addEventListener('click', () => {
+            const firstStep = document.querySelector('[data-care-step="1"]');
+            const requiredFields = Array.from(firstStep.querySelectorAll('[required]'));
+            const firstInvalidField = requiredFields.find((field) => !field.checkValidity());
+
+            if (firstInvalidField) {
+                firstInvalidField.reportValidity();
+                return;
+            }
+
+            showCareStep(2);
+        });
+
+        document.getElementById('care-previous-step').addEventListener('click', () => {
+            showCareStep(1);
+        });
+
+        careForm.addEventListener('submit', (event) => {
+            const firstInvalidStep = careSteps.find((section) =>
+                Array.from(section.querySelectorAll('[required]')).some((field) => !field.checkValidity())
+            );
+
+            if (firstInvalidStep) {
+                event.preventDefault();
+                const stepNumber = Number(firstInvalidStep.dataset.careStep);
+                showCareStep(stepNumber);
+                const firstInvalidField = Array.from(firstInvalidStep.querySelectorAll('[required]'))
+                    .find((field) => !field.checkValidity());
+                firstInvalidField.reportValidity();
+            }
+        });
+
+        appointmentModal.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                appointmentModal.classList.add('hidden');
+                appointmentModal.classList.remove('flex');
+                appointmentModal.setAttribute('aria-hidden', 'true');
+            }
+        });
+
+        const scheduleDateInput = document.getElementById('care-schedule-date');
+        scheduleDateInput.min = new Date().toISOString().split('T')[0];
+        // :: END CARE MODAL SCRIPT
     </script>
 </body>
 

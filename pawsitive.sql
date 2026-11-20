@@ -183,13 +183,15 @@ CREATE TABLE `care_service_record` (
 -- Table structure for table `diagnostic_care_record`
 --
 
+-- :: START OPTIONAL DIAGNOSTIC CARE DETAILS
 CREATE TABLE `diagnostic_care_record` (
   `id` int UNSIGNED NOT NULL,
   `record_id` int UNSIGNED NOT NULL,
-  `test_type` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `test_type` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `test_result` text,
   `diagnosis` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+-- :: END OPTIONAL DIAGNOSTIC CARE DETAILS
 
 -- --------------------------------------------------------
 
@@ -197,11 +199,13 @@ CREATE TABLE `diagnostic_care_record` (
 -- Table structure for table `general_care_record`
 --
 
+-- :: START OPTIONAL GENERAL CARE DETAILS
 CREATE TABLE `general_care_record` (
   `id` int UNSIGNED NOT NULL,
   `record_id` int UNSIGNED NOT NULL,
-  `checkup_details` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
+  `checkup_details` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+-- :: END OPTIONAL GENERAL CARE DETAILS
 
 -- --------------------------------------------------------
 
@@ -209,11 +213,13 @@ CREATE TABLE `general_care_record` (
 -- Table structure for table `hygiene_care_record`
 --
 
+-- :: START OPTIONAL HYGIENE CARE DETAILS
 CREATE TABLE `hygiene_care_record` (
   `id` int UNSIGNED NOT NULL,
   `record_id` int UNSIGNED NOT NULL,
-  `cleaning_type` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
+  `cleaning_type` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+-- :: END OPTIONAL HYGIENE CARE DETAILS
 
 -- --------------------------------------------------------
 
@@ -237,13 +243,15 @@ CREATE TABLE `pet` (
 -- Table structure for table `preventive_care_record`
 --
 
+-- :: START OPTIONAL PREVENTIVE CARE DETAILS
 CREATE TABLE `preventive_care_record` (
   `id` int UNSIGNED NOT NULL,
   `record_id` int UNSIGNED NOT NULL,
-  `care_type` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `care_type` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `drug_type` varchar(100) DEFAULT NULL,
   `dose_number` tinyint UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+-- :: END OPTIONAL PREVENTIVE CARE DETAILS
 
 -- --------------------------------------------------------
 
