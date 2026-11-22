@@ -16,7 +16,7 @@ $carePage = [
     'sectionTitle' => 'A guided diagnostic visit',
     'sectionIntro' => 'The care team can recommend suitable next steps after reviewing your pet and their symptoms.',
     'packages' => [
-        ['icon' => 'bx bx-notepad', 'title' => 'Concern and history review', 'description' => 'Start with what you have noticed and when it began.', 'items' => ['Discuss symptoms and recent changes', 'Review relevant health history', 'Bring previous results if available']],
+        ['icon' => 'bx bx-note', 'title' => 'Concern and history review', 'description' => 'Start with what you have noticed and when it began.', 'items' => ['Discuss symptoms and recent changes', 'Review relevant health history', 'Bring previous results if available']],
         ['icon' => 'bx bx-test-tube', 'title' => 'Recommended testing', 'description' => 'Testing options are discussed based on the initial assessment.', 'items' => ['Blood work may be recommended', 'Imaging may be discussed when suitable', 'The team explains the next step before proceeding']],
         ['icon' => 'bx bx-message-detail', 'title' => 'Results and follow-up', 'description' => 'Get help understanding findings and possible next steps.', 'items' => ['Review available results with the team', 'Discuss follow-up recommendations', 'Ask questions about ongoing care']],
     ],

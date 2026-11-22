@@ -2,15 +2,18 @@
 namespace App\Controller;
 
 use App\Model\Adoption_Application;
+use App\Model\Service_Request;
 
 // :: START ADOPTION APPLICATION CONTROLLER
 class Adoption_Application_Controller
 {
     private Adoption_Application $application;
+    private Service_Request $serviceRequest;
 
     public function __construct()
     {
         $this->application = new Adoption_Application();
+        $this->serviceRequest = new Service_Request();
     }
 
     public function handlePageRequest(
@@ -50,12 +53,55 @@ class Adoption_Application_Controller
             $this->application->submitApplication($accountId, $validation['data']);
             $session['adoption_application_success'] = 'Your adoption application has been submitted.';
             $state['redirect_to'] = 'index.php#pets';
-        } catch (\Throwable $error) {
+        } catch (\Exception $error) {
             $state['form_error'] = 'We could not submit your application. Please try again.';
         }
 
         return $state;
     }
+
+    // :: START CUSTOMER SCHEDULE AND STAFF DASHBOARD
+    public function getCustomerSchedule(int $accountId): array
+    {
+        return [
+            'adoption_applications' => $this->application->getForApplicant($accountId),
+            'service_requests' => $this->serviceRequest->getForAccount($accountId),
+        ];
+    }
+
+    public function getStaffDashboard(): array
+    {
+        return [
+            'adoption_applications' => $this->application->getAllApplications(),
+            'service_requests' => $this->serviceRequest->getAllRequests(),
+        ];
+    }
+
+    public function updateStaffStatus(array $post): string
+    {
+        $recordType = (string) ($post['record_type'] ?? '');
+        $recordId = filter_var($post['record_id'] ?? null, FILTER_VALIDATE_INT);
+        $status = (string) ($post['status'] ?? '');
+
+        if (
+            $recordId === false
+            || $recordId < 1
+            || !in_array($status, ['Pending', 'Approved', 'Rejected'], true)
+        ) {
+            return 'Choose a valid status.';
+        }
+
+        if ($recordType === 'adoption') {
+            $updated = $this->application->updateStatus($recordId, $status);
+        } elseif ($recordType === 'service') {
+            $updated = $this->serviceRequest->updateStatus($recordId, $status);
+        } else {
+            return 'Choose a valid request.';
+        }
+
+        return $updated ? 'Status updated.' : 'Could not update the status.';
+    }
+    // :: END CUSTOMER SCHEDULE AND STAFF DASHBOARD
 
     private function validateApplication(array $post): array
     {

@@ -25,6 +25,83 @@ class Adoption_Application
         ];
     }
 
+    // :: START APPLICATION LISTS AND STATUS
+    public function getForApplicant(int $accountId): array
+    {
+        $db = $this->createConnection()->connect();
+        $stmt = $db->prepare(
+            'SELECT
+                aa.application_id,
+                aa.status,
+                aa.application_date,
+                pet.adoption_pet_name
+            FROM adoption_application AS aa
+            INNER JOIN adoption_pet AS pet
+                ON pet.adoption_pet_id = aa.pet_id
+            WHERE aa.applicant_id = :account_id
+            ORDER BY aa.application_date DESC'
+        );
+        $stmt->execute(['account_id' => $accountId]);
+
+        return $stmt->fetchAll();
+    }
+
+    public function getAllApplications(): array
+    {
+        $db = $this->createConnection()->connect();
+        $stmt = $db->query(
+            'SELECT
+                aa.application_id,
+                aa.status,
+                aa.application_date,
+                account.first_name,
+                account.last_name,
+                account.age AS applicant_age,
+                account.email,
+                pet.adoption_pet_name,
+                pet.species,
+                pet.breed,
+                pet.age AS pet_age,
+                pet.sex AS pet_sex,
+                details.address,
+                details.monthly_income,
+                details.occupation,
+                details.household_members,
+                details.reason_for_adoption,
+                details.is_committed
+            FROM adoption_application AS aa
+            INNER JOIN account
+                ON account.account_id = aa.applicant_id
+            INNER JOIN adoption_pet AS pet
+                ON pet.adoption_pet_id = aa.pet_id
+            LEFT JOIN adoption_application_details AS details
+                ON details.application_id = aa.application_id
+            ORDER BY aa.application_date DESC'
+        );
+
+        return $stmt->fetchAll();
+    }
+
+    public function updateStatus(int $applicationId, string $status): bool
+    {
+        if (!in_array($status, ['Pending', 'Approved', 'Rejected'], true)) {
+            return false;
+        }
+
+        $db = $this->createConnection()->connect();
+        $stmt = $db->prepare(
+            'UPDATE adoption_application
+            SET status = :status
+            WHERE application_id = :application_id'
+        );
+
+        return $stmt->execute([
+            'status' => $status,
+            'application_id' => $applicationId,
+        ]);
+    }
+    // :: END APPLICATION LISTS AND STATUS
+
     public function submitApplication(int $accountId, array $application): void
     {
         $db = $this->createConnection()->connect();
@@ -71,7 +148,7 @@ class Adoption_Application
             ]);
 
             $db->commit();
-        } catch (\Throwable $error) {
+        } catch (\Exception $error) {
             if ($db->inTransaction()) {
                 $db->rollBack();
             }

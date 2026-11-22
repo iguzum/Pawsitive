@@ -105,6 +105,10 @@ $escapeAdoptionValue = static fn($value): string => htmlspecialchars((string) ($
     </div>
 
     <main class="mt-40 md:mt-50 w-full flex flex-col" id="pets">
+        <!-- :: START CUSTOMER SCHEDULE MOVED TO PAGE -->
+        <!-- Customers can open their schedule from the header Schedule link. -->
+        <!-- :: END CUSTOMER SCHEDULE MOVED TO PAGE -->
+
         <?php if ($adoptionPageState['success_message'] !== ''): ?>
             <!-- :: START ADOPTION SUCCESS MESSAGE -->
             <p role="status"

@@ -22,11 +22,13 @@ class Service_Request
 
     public function addRequest(): ?array
     {
+        $connection = $this->createConnection();
+
         $careRecord = match ($this->service_id) {
-            1 => new General_Care_Record(),
-            2 => new Preventive_Care_Record(),
-            3 => new Hygiene_Care_Record(),
-            4 => new Diagnostic_Care_Record(),
+            1 => new General_Care_Record($connection),
+            2 => new Preventive_Care_Record($connection),
+            3 => new Hygiene_Care_Record($connection),
+            4 => new Diagnostic_Care_Record($connection),
             default => null,
         };
 
@@ -34,7 +36,7 @@ class Service_Request
             return null;
         }
 
-        $db = $this->createConnection()->connect();
+        $db = $connection->connect();
 
         // :: START EXCEPTION HANDLING
         try {
@@ -51,18 +53,19 @@ class Service_Request
 
             $stmt = $db->prepare(
                 'INSERT INTO service_request
-                    (pet_id, service_id, request_date, schedule_date)
+                    (status, pet_id, service_id, request_date, schedule_date)
                 VALUES
-                    (:pet_id, :service_id, CURRENT_DATE, :schedule_date)'
+                    (:status, :pet_id, :service_id, CURRENT_DATE, :schedule_date)'
             );
             $stmt->execute([
+                'status' => 'Pending',
                 'pet_id' => $petId,
                 'service_id' => $this->service_id,
                 'schedule_date' => $this->schedule_date,
             ]);
             $requestId = (int) $db->lastInsertId();
 
-            $recordId = $careRecord->addRecord($requestId, $db);
+            $recordId = $careRecord->addRecord($requestId);
 
             $db->commit();
 
@@ -80,6 +83,78 @@ class Service_Request
         }
         // :: END EXCEPTION HANDLING
     }
+
+    // :: START SERVICE REQUEST LISTS AND STATUS
+    public function getForAccount(int $accountId): array
+    {
+        $db = $this->createConnection()->connect();
+        $stmt = $db->prepare(
+            'SELECT
+                sr.request_id,
+                sr.status,
+                sr.request_date,
+                sr.schedule_date,
+                pet.pet_name,
+                service.service_name
+            FROM service_request AS sr
+            INNER JOIN pet
+                ON pet.pet_id = sr.pet_id
+            INNER JOIN care_service AS service
+                ON service.service_id = sr.service_id
+            WHERE pet.account_id = :account_id
+            ORDER BY sr.schedule_date DESC, sr.request_id DESC'
+        );
+        $stmt->execute(['account_id' => $accountId]);
+
+        return $stmt->fetchAll();
+    }
+
+    public function getAllRequests(): array
+    {
+        $db = $this->createConnection()->connect();
+        $stmt = $db->query(
+            'SELECT
+                sr.request_id,
+                sr.status,
+                sr.request_date,
+                sr.schedule_date,
+                pet.pet_name,
+                service.service_name,
+                account.first_name,
+                account.last_name,
+                account.email
+            FROM service_request AS sr
+            INNER JOIN pet
+                ON pet.pet_id = sr.pet_id
+            INNER JOIN account
+                ON account.account_id = pet.account_id
+            INNER JOIN care_service AS service
+                ON service.service_id = sr.service_id
+            ORDER BY sr.schedule_date DESC, sr.request_id DESC'
+        );
+
+        return $stmt->fetchAll();
+    }
+
+    public function updateStatus(int $requestId, string $status): bool
+    {
+        if (!in_array($status, ['Pending', 'Approved', 'Rejected'], true)) {
+            return false;
+        }
+
+        $db = $this->createConnection()->connect();
+        $stmt = $db->prepare(
+            'UPDATE service_request
+            SET status = :status
+            WHERE request_id = :request_id'
+        );
+
+        return $stmt->execute([
+            'status' => $status,
+            'request_id' => $requestId,
+        ]);
+    }
+    // :: END SERVICE REQUEST LISTS AND STATUS
 
     private function createConnection(): Connection
     {

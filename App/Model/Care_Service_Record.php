@@ -2,23 +2,20 @@
 namespace App\Model;
 
 use App\Config\Connection;
-use PDO;
 
 // :: START ABSTRACT CARE SERVICE RECORD
 abstract class Care_Service_Record
 {
-    private ?Connection $connection = null;
-
-    abstract public function addRecord(int $requestId, ?PDO $db = null): int;
-
-    protected function createRecord(
-        int $requestId,
-        callable $insertCareDetails,
-        ?PDO $db = null
-    ): int
+    public function __construct(protected Connection $connection)
     {
-        $ownsTransaction = $db === null;
-        $db ??= $this->createConnection()->connect();
+    }
+
+    abstract public function addRecord(int $requestId): int;
+
+    protected function createRecord(int $requestId, string $detailsTable): int
+    {
+        $db = $this->connection->connect();
+        $ownsTransaction = !$db->inTransaction();
 
         // :: START EXCEPTION HANDLING
         try {
@@ -33,7 +30,10 @@ abstract class Care_Service_Record
             $stmt->execute(['request_id' => $requestId]);
 
             $recordId = (int) $db->lastInsertId();
-            $insertCareDetails($db, $recordId);
+            $detailsStmt = $db->prepare(
+                "INSERT INTO {$detailsTable} (record_id) VALUES (:record_id)"
+            );
+            $detailsStmt->execute(['record_id' => $recordId]);
 
             if ($ownsTransaction) {
                 $db->commit();
@@ -48,15 +48,6 @@ abstract class Care_Service_Record
             throw $error;
         }
         // :: END EXCEPTION HANDLING
-    }
-
-    private function createConnection(): Connection
-    {
-        if ($this->connection === null) {
-            $this->connection = new Connection();
-        }
-
-        return $this->connection;
     }
 }
 // :: END ABSTRACT CARE SERVICE RECORD

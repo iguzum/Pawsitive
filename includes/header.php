@@ -81,6 +81,16 @@ function roleDashboardPath(string $role): string
 }
 // :: END ROLE DASHBOARD LINKS
 // :: END HOME AND CONTACT PATH FIX
+
+// :: START CUSTOMER SCHEDULE LINK
+function customerSchedulePath(): string
+{
+    $currentScript = $_SERVER['PHP_SELF'] ?? '';
+    $base = preg_match('~/(services|pages|admin|staff)/~', $currentScript) ? '../' : './';
+
+    return $base . 'pages/schedule.php';
+}
+// :: END CUSTOMER SCHEDULE LINK
 ?>
 
 <header id="siteHeader"
@@ -200,8 +210,14 @@ function roleDashboardPath(string $role): string
             <?php elseif ($headerRole === 'staff'): ?>
                 <a href="<?= roleDashboardPath('staff') ?>"
                     class="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-text transition-colors hover:bg-card-inner hover:text-primary">
+                    <i class="bx bx-grid-alt text-lg" aria-hidden="true"></i>
+                    Dashboard
+                </a>
+            <?php elseif ($headerRole === 'customer'): ?>
+                <a href="<?= customerSchedulePath() ?>"
+                    class="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-text transition-colors hover:bg-card-inner hover:text-primary">
                     <i class="bx bx-calendar text-lg" aria-hidden="true"></i>
-                    Schedules
+                    Schedule
                 </a>
             <?php endif; ?>
             <!-- :: END ROLE DASHBOARD NAVIGATION -->
