@@ -106,22 +106,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         </div>
 
-                        <div class="flex flex-wrap items-center justify-between gap-3 py-3 text-sm">
-                            <label for="remember"
-                                class="inline-flex cursor-pointer items-center gap-2.5 text-muted text-xs">
-                                <input type="checkbox" name="remember" id="remember"
-                                    class="h-4 w-4 rounded border-border accent-primary focus:ring-primary">
-                                Remember me
-                            </label>
-                            <a href=""
-                                class="font-semibold text-primary transition hover:text-primary-hover hover:underline text-xs">
-                                Forgot password?</a>
-                        </div>
-
+                        <!-- :: START LOGIN SUBMIT ACTION -->
                         <button type="submit" name="login-btn"
                             class="group mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all duration-200 hover:rounded-none hover:bg-tertiary focus:outline-none focus:ring-4 focus:ring-primary-hover">
                             Sign in
                         </button>
+                        <!-- :: END LOGIN SUBMIT ACTION -->
                     </form>
 
                     <p class="mt-8 text-center text-xs text-muted">
@@ -137,6 +127,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </main>
     <!-- :: END LOGIN PAGE DESIGN -->
+    <!-- :: START LOAD AOS FOR LOGIN -->
+    <?php require __DIR__ . '/../includes/aos.php'; ?>
+    <!-- :: END LOAD AOS FOR LOGIN -->
 </body>
 
 </html>

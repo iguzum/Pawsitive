@@ -28,7 +28,7 @@ if ($adoptionPageState['redirect_to'] !== null) {
 // :: END ADOPTION APPLICATION CONTROLLER CALL
 
 $adoption_pets = new Adoption_Pet_Controller();
-$adoption_pets = $adoption_pets->getAllAdoptionPets();
+$adoption_pets = $adoption_pets->getAvailableAdoptionPets();
 $escapeAdoptionValue = static fn($value): string => htmlspecialchars((string) ($value ?? ''), ENT_QUOTES, 'UTF-8');
 
 ?>
@@ -97,10 +97,10 @@ $escapeAdoptionValue = static fn($value): string => htmlspecialchars((string) ($
                     <p class="text-xs md:text-md lg:text-lg">Adopt a pet and give them a loving home.</p>
                 </div>
             </div>
-            <button
-                class="bg-card-inner hover:bg-secondary hover:text-white text-md md:text-lg py-2 px-3 lg:py-4 lg:px-6 rounded-xl transition-all duration-200 hover:rounded-none cursor-pointer w-full md:w-fit tracking-wider">
+            <a href="#pets"
+                class="bg-card-inner hover:bg-secondary text-center hover:text-white text-md md:text-lg py-2 px-3 lg:py-4 lg:px-6 rounded-xl transition-all duration-200 hover:rounded-none cursor-pointer w-full md:w-fit tracking-wider">
                 Adopt Now
-            </button>
+            </a>
         </div>
     </div>
 
@@ -138,6 +138,19 @@ $escapeAdoptionValue = static fn($value): string => htmlspecialchars((string) ($
             <div class="w-full max-w-350 mt-15 md:mt-20">
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-7 md:px-15">
 
+                    <?php if ($adoption_pets === []): ?>
+                        <!-- :: START NO PETS EMPTY STATE -->
+                        <div class="col-span-full rounded-3xl border border-border bg-card-outer px-6 py-14 text-center shadow-sm">
+                            <span class="mx-auto flex size-14 items-center justify-center rounded-2xl bg-card-inner text-2xl text-tertiary">
+                                <i class="bx bx-paw-print" aria-hidden="true"></i>
+                            </span>
+                            <h2 class="mt-5 text-xl font-bold text-text">No pets to adopt right now</h2>
+                            <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-muted">
+                                Please check back soon. New pets may be available for adoption later.
+                            </p>
+                        </div>
+                        <!-- :: END NO PETS EMPTY STATE -->
+                    <?php else: ?>
                     <?php foreach ($adoption_pets as $pet): ?>
 
                         <!-- START NG LOOP -->
@@ -145,9 +158,9 @@ $escapeAdoptionValue = static fn($value): string => htmlspecialchars((string) ($
                         <div
                             class="w-full border h-full min-w-0 bg-white rounded-2xl  border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col group">
                             <div
-                                class="relative w-full aspect-4/4 overflow-hidden bg-gray-100 select-none pointer-events-none">
+                                class="relative aspect-square w-full overflow-hidden bg-gray-100 select-none pointer-events-none">
                                 <img src="<?= htmlspecialchars($pet['image'] ?? 'https://placehold.co/600x600?text=No+Image') ?>"
-                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                    class="aspect-square h-full w-full object-cover"
                                     alt="<?= htmlspecialchars($pet['adoption_pet_name']) ?> - Pet available for adoption">
                             </div>
 
@@ -185,11 +198,22 @@ $escapeAdoptionValue = static fn($value): string => htmlspecialchars((string) ($
 
                                 <div class="flex items-center gap-3 pt-3 mt-3 border-t border-slate-200">
 
-                                    <button data-modal-target="default-modal" data-modal-toggle="default-modal"
+                                    <!-- :: START PET DETAILS BUTTON DATA -->
+                                    <button type="button" data-pet-details-open
+                                        data-pet-name="<?= $escapeAdoptionValue($pet['adoption_pet_name'] ?? '') ?>"
+                                        data-pet-image="<?= $escapeAdoptionValue($pet['image'] ?? '') ?>"
+                                        data-pet-species="<?= $escapeAdoptionValue($pet['species'] ?? '') ?>"
+                                        data-pet-breed="<?= $escapeAdoptionValue($pet['breed'] ?? '') ?>"
+                                        data-pet-age="<?= $escapeAdoptionValue($pet['age'] ?? '') ?>"
+                                        data-pet-sex="<?= $escapeAdoptionValue($pet['sex'] ?? '') ?>"
+                                        data-pet-behavior="<?= $escapeAdoptionValue($pet['behavior_details'] ?? '') ?>"
+                                        data-pet-health="<?= $escapeAdoptionValue($pet['health_condition'] ?? '') ?>"
+                                        data-pet-rescue="<?= $escapeAdoptionValue($pet['rescue_history'] ?? '') ?>"
                                         class="flex-1 min-w-0 py-3 px-3 text-sm font-semibold text-text bg-transparent rounded-xl border-2 border-gray-300/70 hover:bg-secondary hover:rounded-none transition-all duration-200 cursor-pointer"
-                                        type="button">
+                                    >
                                         Details
                                     </button>
+                                    <!-- :: END PET DETAILS BUTTON DATA -->
 
                                     <!-- :: START OPEN ADOPTION APPLICATION MODAL -->
                                     <button type="button" data-adoption-modal-open
@@ -205,52 +229,92 @@ $escapeAdoptionValue = static fn($value): string => htmlspecialchars((string) ($
                         <!--  END CARD -->
                         <!-- END NG LOOP -->
                     <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
 
             </div>
         </section>
 
         <!-- :: START SINGLE PET DETAILS MODAL -->
-        <!-- :: START MODAL THEME -->
-        <!-- Main modal -->
-        <div id="default-modal" tabindex="-1" aria-hidden="true"
-            class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full bg-text/50 backdrop-blur-sm">
-            <div class="relative p-4 w-full max-w-2xl max-h-full">
-                <!-- Modal content -->
-                <div class="relative bg-card-outer border border-border rounded-2xl shadow-xl p-4 md:p-6">
-                    <!-- Modal header -->
-                    <div class="flex items-center justify-between border-b border-border pb-4 md:pb-5">
-                        <h3 class="text-lg font-primary font-semibold text-text">
-                            Terms of Service
-                        </h3>
-                        <button type="button"
-                            class="text-muted bg-transparent hover:bg-card-inner hover:text-text rounded-xl text-sm w-12 h-12 border border-gray-300/70 ms-auto inline-flex justify-center items-center"
-                            data-modal-hide="default-modal">
-                            <i class="bx bx-x text-2xl text-tertiary"></i>
-                            <span class="sr-only">Close modal</span>
-                        </button>
+        <!-- :: START PET DETAILS MODAL DESIGN -->
+        <div id="default-modal" tabindex="-1" aria-hidden="true" role="dialog" aria-modal="true"
+            aria-labelledby="pet-modal-name"
+            class="hidden fixed inset-0 z-1000000 items-center justify-center overflow-y-auto bg-text/60 p-4 backdrop-blur-sm">
+            <section class="relative my-auto w-full max-w-4xl overflow-hidden rounded-3xl border border-border bg-card-outer shadow-2xl">
+                <div class="flex items-start justify-between gap-4 border-b border-border px-5 py-5 sm:px-8">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-[0.18em] text-tertiary">Meet your companion</p>
+                        <h2 id="pet-modal-name" class="mt-2 text-2xl font-bold text-text sm:text-3xl">Pet details</h2>
+                        <p id="pet-modal-subtitle" class="mt-1 text-sm text-muted">Learn more about this pet.</p>
                     </div>
-                    <!-- Modal body -->
-                    <div class="space-y-4 md:space-y-6 py-4 md:py-6 font-primary">
-                        <p class="leading-relaxed text-muted">
-                            <?= htmlspecialchars($pet['behavior_details']) ?>
+                    <button type="button" data-pet-modal-close aria-label="Close pet details"
+                        class="flex size-11 shrink-0 items-center justify-center rounded-xl border border-border text-muted transition hover:bg-card-inner hover:text-text">
+                        <i class="bx bx-x text-2xl" aria-hidden="true"></i>
+                    </button>
+                </div>
 
-                        </p>
-                        <p class="leading-relaxed text-muted">
-                            <?= htmlspecialchars($pet['health_condition']) ?>
-                        </p>
-                        <p class="leading-relaxed text-muted">
-                            <?= htmlspecialchars($pet['rescue_history']) ?>
-                        </p>
+                <div class="grid gap-6 p-5 sm:p-8 md:grid-cols-[0.9fr_1.1fr]">
+                    <div class="relative aspect-square overflow-hidden rounded-2xl bg-card-inner">
+                        <img id="pet-modal-image" src="" alt=""
+                            class="absolute inset-0 aspect-square h-full w-full object-cover">
                     </div>
-                    <!-- Modal footer -->
-                    <div class="flex items-center border-t border-border space-x-4 pt-4 md:pt-5">
-                        <p class="text-xs text-muted">Pawsitive</p>
+
+                    <div class="flex flex-col gap-5">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="rounded-2xl border border-border bg-card-inner p-4">
+                                <p class="text-xs font-semibold uppercase tracking-wide text-muted">Species</p>
+                                <p id="pet-modal-species" class="mt-2 font-bold capitalize text-text">—</p>
+                            </div>
+                            <div class="rounded-2xl border border-border bg-card-inner p-4">
+                                <p class="text-xs font-semibold uppercase tracking-wide text-muted">Breed</p>
+                                <p id="pet-modal-breed" class="mt-2 font-bold text-text">—</p>
+                            </div>
+                            <div class="rounded-2xl border border-border bg-card-inner p-4">
+                                <p class="text-xs font-semibold uppercase tracking-wide text-muted">Age</p>
+                                <p id="pet-modal-age" class="mt-2 font-bold text-text">—</p>
+                            </div>
+                            <div class="rounded-2xl border border-border bg-card-inner p-4">
+                                <p class="text-xs font-semibold uppercase tracking-wide text-muted">Sex</p>
+                                <p id="pet-modal-sex" class="mt-2 font-bold capitalize text-text">—</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <article class="rounded-2xl border border-border bg-background p-4">
+                                <h3 class="flex items-center gap-2 font-bold text-text">
+                                    <i class="bx bx-sparkles text-lg text-tertiary" aria-hidden="true"></i>
+                                    Personality
+                                </h3>
+                                <p id="pet-modal-behavior" class="mt-2 whitespace-pre-line text-sm leading-6 text-muted">—</p>
+                            </article>
+                            <article class="rounded-2xl border border-border bg-background p-4">
+                                <h3 class="flex items-center gap-2 font-bold text-text">
+                                    <i class="bx bx-plus-medical text-lg text-primary" aria-hidden="true"></i>
+                                    Health
+                                </h3>
+                                <p id="pet-modal-health" class="mt-2 whitespace-pre-line text-sm leading-6 text-muted">—</p>
+                            </article>
+                            <article class="rounded-2xl border border-border bg-background p-4">
+                                <h3 class="flex items-center gap-2 font-bold text-text">
+                                    <i class="bx bx-home-heart text-lg text-tertiary" aria-hidden="true"></i>
+                                    Rescue story
+                                </h3>
+                                <p id="pet-modal-rescue" class="mt-2 whitespace-pre-line text-sm leading-6 text-muted">—</p>
+                            </article>
+                        </div>
                     </div>
                 </div>
-            </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-3 border-t border-border bg-card-inner/60 px-5 py-4 sm:px-8">
+                    <p class="text-xs text-muted">Every pet deserves a safe, loving home.</p>
+                    <button type="button" data-pet-modal-close
+                        class="rounded-xl bg-tertiary px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-primary hover:rounded-none">
+                        Close details
+                    </button>
+                </div>
+            </section>
         </div>
-        <!-- :: END MODAL THEME -->
+        <!-- :: END PET DETAILS MODAL DESIGN -->
         <!-- :: END SINGLE PET DETAILS MODAL -->
 
         <!-- :: START ADOPTION APPLICATION MODAL -->
@@ -319,7 +383,7 @@ $escapeAdoptionValue = static fn($value): string => htmlspecialchars((string) ($
 
                         <div class="mt-8 flex justify-end">
                             <button type="button" id="adoption-next-step"
-                                class="inline-flex items-center gap-2 rounded-xl bg-tertiary px-6 py-3 text-sm font-semibold text-white transition hover:bg-tertiary-hover">
+                                class="inline-flex items-center gap-2 rounded-xl bg-tertiary px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-primary hover:rounded-none">
                                 Next <i class="bx bx-right-arrow-alt text-lg" aria-hidden="true"></i>
                             </button>
                         </div>
@@ -395,11 +459,11 @@ $escapeAdoptionValue = static fn($value): string => htmlspecialchars((string) ($
 
                         <div class="mt-8 flex flex-wrap justify-between gap-3">
                             <button type="button" id="adoption-previous-step"
-                                class="rounded-xl border border-border bg-card-inner px-5 py-3 text-sm font-semibold text-text transition hover:bg-card-inner-hover">
+                                class="rounded-xl border border-border bg-card-inner px-5 py-3 text-sm font-semibold text-text transition-all duration-200 hover:bg-card-inner-hover hover:rounded-none">
                                 Back
                             </button>
                             <button type="submit"
-                                class="inline-flex items-center gap-2 rounded-xl bg-tertiary px-6 py-3 text-sm font-semibold text-white transition hover:bg-tertiary-hover">
+                                class="inline-flex items-center gap-2 rounded-xl bg-tertiary px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-primary hover:rounded-none">
                                 Submit application <i class="bx bx-check text-lg" aria-hidden="true"></i>
                             </button>
                         </div>
@@ -434,35 +498,73 @@ $escapeAdoptionValue = static fn($value): string => htmlspecialchars((string) ($
     </footer>
     <!-- :: END FOOTER REDESIGN -->
 
-    <!-- :: START PET MODAL CLICK HANDLERS -->
+    <!-- :: START PET DETAILS MODAL HANDLERS -->
     <script>
         const petModal = document.getElementById('default-modal');
+        const petModalName = document.getElementById('pet-modal-name');
+        const petModalSubtitle = document.getElementById('pet-modal-subtitle');
+        const petModalImage = document.getElementById('pet-modal-image');
+        const petModalFields = {
+            species: document.getElementById('pet-modal-species'),
+            breed: document.getElementById('pet-modal-breed'),
+            age: document.getElementById('pet-modal-age'),
+            sex: document.getElementById('pet-modal-sex'),
+            behavior: document.getElementById('pet-modal-behavior'),
+            health: document.getElementById('pet-modal-health'),
+            rescue: document.getElementById('pet-modal-rescue')
+        };
+        const fallbackPetImage = 'https://placehold.co/800x800?text=Pet';
 
-        document.querySelectorAll('[data-modal-toggle="default-modal"]').forEach((button) => {
+        function openPetDetails(button) {
+            const pet = button.dataset;
+            const petName = pet.petName || 'Pet details';
+
+            petModalName.textContent = petName;
+            petModalSubtitle.textContent = [pet.petSpecies, pet.petBreed].filter(Boolean).join(' · ') || 'Meet your new companion.';
+            petModalImage.src = pet.petImage || fallbackPetImage;
+            petModalImage.alt = `${petName} available for adoption`;
+            petModalFields.species.textContent = pet.petSpecies || 'Not provided';
+            petModalFields.breed.textContent = pet.petBreed || 'Not provided';
+            petModalFields.age.textContent = pet.petAge ? `${pet.petAge} ${pet.petAge === '1' ? 'year' : 'years'} old` : 'Not provided';
+            petModalFields.sex.textContent = pet.petSex || 'Not provided';
+            petModalFields.behavior.textContent = pet.petBehavior || 'Details coming soon.';
+            petModalFields.health.textContent = pet.petHealth || 'Details coming soon.';
+            petModalFields.rescue.textContent = pet.petRescue || 'Details coming soon.';
+
+            petModal.classList.remove('hidden');
+            petModal.classList.add('flex');
+            petModal.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closePetDetails() {
+            petModal.classList.add('hidden');
+            petModal.classList.remove('flex');
+            petModal.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        document.querySelectorAll('[data-pet-details-open]').forEach((button) => {
             button.addEventListener('click', () => {
-                petModal.classList.remove('hidden');
-                petModal.classList.add('flex');
-                petModal.setAttribute('aria-hidden', 'false');
+                openPetDetails(button);
             });
         });
 
-        document.querySelectorAll('[data-modal-hide="default-modal"]').forEach((button) => {
-            button.addEventListener('click', () => {
-                petModal.classList.add('hidden');
-                petModal.classList.remove('flex');
-                petModal.setAttribute('aria-hidden', 'true');
-            });
+        document.querySelectorAll('[data-pet-modal-close]').forEach((button) => {
+            button.addEventListener('click', closePetDetails);
         });
 
         petModal.addEventListener('click', (event) => {
-            if (event.target === petModal) {
-                petModal.classList.add('hidden');
-                petModal.classList.remove('flex');
-                petModal.setAttribute('aria-hidden', 'true');
+            if (event.target === petModal) closePetDetails();
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && !petModal.classList.contains('hidden')) {
+                closePetDetails();
             }
         });
     </script>
-    <!-- :: END PET MODAL CLICK HANDLERS -->
+    <!-- :: END PET DETAILS MODAL HANDLERS -->
 
     <!-- :: START ADOPTION APPLICATION MODAL HANDLERS -->
     <script>

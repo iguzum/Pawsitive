@@ -20,7 +20,7 @@ if (!$auth->isLogin()) {
     <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <title>Get in touch</title>
+    <title>Contact Us | PAWSITIVE</title>
 </head>
 
 <body class="min-h-screen w-full">

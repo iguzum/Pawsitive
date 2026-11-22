@@ -5,15 +5,19 @@ use App\Model\Adoption_Application;
 use App\Model\Service_Request;
 
 // :: START ADOPTION APPLICATION CONTROLLER
-class Adoption_Application_Controller
+// :: START ADOPTION STATUS CONTROLLER OVERRIDE
+class Adoption_Application_Controller extends Abstract_Status_Controller
+    // :: END ADOPTION STATUS CONTROLLER OVERRIDE
 {
     private Adoption_Application $application;
     private Service_Request $serviceRequest;
+    private Service_Request_Controller $serviceRequestController;
 
     public function __construct()
     {
         $this->application = new Adoption_Application();
         $this->serviceRequest = new Service_Request();
+        $this->serviceRequestController = new Service_Request_Controller($this->serviceRequest);
     }
 
     public function handlePageRequest(
@@ -77,6 +81,13 @@ class Adoption_Application_Controller
         ];
     }
 
+    // :: START ADOPTION STATUS UPDATE OVERRIDE
+    public function updateStatus(int $recordId, string $status): bool
+    {
+        return $this->application->updateStatus($recordId, $status);
+    }
+    // :: END ADOPTION STATUS UPDATE OVERRIDE
+
     public function updateStaffStatus(array $post): string
     {
         $recordType = (string) ($post['record_type'] ?? '');
@@ -91,16 +102,47 @@ class Adoption_Application_Controller
             return 'Choose a valid status.';
         }
 
-        if ($recordType === 'adoption') {
-            $updated = $this->application->updateStatus($recordId, $status);
-        } elseif ($recordType === 'service') {
-            $updated = $this->serviceRequest->updateStatus($recordId, $status);
-        } else {
+        // :: START POLYMORPHIC STATUS CONTROLLER
+        $statusController = match ($recordType) {
+            'adoption' => $this,
+            'service' => $this->serviceRequestController,
+            default => null,
+        };
+
+        if (!($statusController instanceof Abstract_Status_Controller)) {
             return 'Choose a valid request.';
         }
 
+        $updated = $statusController->updateStatus($recordId, $status);
+        // :: END POLYMORPHIC STATUS CONTROLLER
+
         return $updated ? 'Status updated.' : 'Could not update the status.';
     }
+
+    // :: START STAFF RECORD REMOVAL
+    public function removeStaffRecord(array $post): string
+    {
+        $recordId = filter_var($post['record_id'] ?? null, FILTER_VALIDATE_INT);
+
+        if ($recordId === false || $recordId < 1) {
+            return 'Choose a valid record to remove.';
+        }
+
+        $formAction = (string) ($post['form_action'] ?? '');
+
+        if ($formAction === 'delete_adoption') {
+            $removed = $this->application->deleteApplication($recordId);
+            return $removed ? 'Adoption application removed.' : 'Could not remove the adoption application.';
+        }
+
+        if ($formAction === 'delete_service_request') {
+            $removed = $this->serviceRequest->deleteRequest($recordId);
+            return $removed ? 'Care appointment removed.' : 'Could not remove the care appointment.';
+        }
+
+        return 'Choose a valid record to remove.';
+    }
+    // :: END STAFF RECORD REMOVAL
     // :: END CUSTOMER SCHEDULE AND STAFF DASHBOARD
 
     private function validateApplication(array $post): array

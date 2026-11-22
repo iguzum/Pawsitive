@@ -5,15 +5,23 @@ $footerContactPath = preg_match('~/(services|pages|admin|staff)/~', $footerCurre
     ? '../pages/contact.php'
     : './pages/contact.php';
 // :: END FOOTER CONTACT PATH FIX
+
+// :: START FOOTER HOME PATH FIX
+$footerHomePath = preg_match('~/(services|pages|admin|staff)/~', $footerCurrentScript)
+    ? '../index.php#home'
+    : '#home';
+// :: END FOOTER HOME PATH FIX
 ?>
 
 <div
     class="relative mx-auto grid w-full max-w-350 grid-cols-1 gap-10 px-6 py-16 sm:grid-cols-2 lg:grid-cols-4 lg:gap-12 lg:px-10">
 
     <div class="flex flex-col items-start w-full">
-        <a href="#home" class="inline-flex items-center gap-3 text-white">
+        <!-- :: START FOOTER LOGO HOME LINK -->
+        <a href="<?= htmlspecialchars($footerHomePath, ENT_QUOTES, 'UTF-8') ?>" class="inline-flex items-center gap-3 text-white">
             <span class="text-xl font-extrabold tracking-wide">PAWSITIVE</span>
         </a>
+        <!-- :: END FOOTER LOGO HOME LINK -->
 
         <p class="mt-5 max-w-xs text-sm leading-7 text-muted">
             Thoughtful care for happier, healthier pets in Dagupan.
@@ -64,9 +72,11 @@ $footerContactPath = preg_match('~/(services|pages|admin|staff)/~', $footerCurre
         <h2 class="text-sm font-bold tracking-widest text-accent">EXPLORE</h2>
 
         <nav class="mt-5 flex flex-col items-start gap-3 text-sm">
-            <a href="#home" class="text-muted transition hover:translate-x-1 hover:text-primary">
+            <!-- :: START FOOTER EXPLORE HOME LINK -->
+            <a href="<?= htmlspecialchars($footerHomePath, ENT_QUOTES, 'UTF-8') ?>" class="text-muted transition hover:translate-x-1 hover:text-primary">
                 Home
             </a>
+            <!-- :: END FOOTER EXPLORE HOME LINK -->
             <a href="./pages/about.php" class="text-muted transition hover:translate-x-1 hover:text-primary">
                 About us
             </a>

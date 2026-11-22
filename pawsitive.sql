@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 19, 2026 at 11:55 AM
+-- Generation Time: Nov 22, 2026 at 04:02 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -46,7 +46,7 @@ CREATE TABLE `account` (
 INSERT INTO `account` (`account_id`, `account_role`, `email`, `password`, `created_at`, `updated_at`, `age`, `first_name`, `last_name`) VALUES
 (1, 'admin', 'admin@gmail.com', '$2y$10$SZ2a8WF0s5fBeiUcfOgLZOS5ZdFGUqLct/DePyAw/xl/Cs1djPm1W', '2026-11-14 16:54:28', '2026-11-17 15:18:02', NULL, NULL, NULL),
 (2, 'customer', 'customer@gmail.com', '$2y$10$SZ2a8WF0s5fBeiUcfOgLZOS5ZdFGUqLct/DePyAw/xl/Cs1djPm1W', '2026-11-15 01:28:00', '2026-11-18 15:35:25', 21, 'mark', 'capinding'),
-(4, 'staff', 'staff@gmail.com', '$2y$10$SZ2a8WF0s5fBeiUcfOgLZOS5ZdFGUqLct/DePyAw/xl/Cs1djPm1W', '2026-11-17 15:21:55', '2026-11-18 00:46:31', NULL, NULL, NULL);
+(5, 'customer', 'customer1@gmail.com', '$2y$10$yUXmo6PvMKJ2ubRwkrmjl.hleKJqKBAfgtufxncfm0.T2hVtNa1oO', '2026-11-22 08:56:32', '2026-11-22 08:57:30', 21, 'mark', 'kendra');
 
 -- --------------------------------------------------------
 
@@ -98,20 +98,16 @@ CREATE TABLE `adoption_pet` (
   `age` tinyint UNSIGNED NOT NULL,
   `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `status` enum('available','adopted') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'available'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `adoption_pet`
 --
 
-INSERT INTO `adoption_pet` (`adoption_pet_id`, `adoption_pet_name`, `species`, `breed`, `sex`, `age`, `image`, `created_at`, `updated_at`) VALUES
-(1, 'Mochi', 'cat', 'Persian', 'female', 2, 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=800&q=80', '2026-11-18 04:22:09', '2026-11-18 04:22:09'),
-(2, 'Whiskers', 'cat', 'British Shorthair', 'male', 1, 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=800&q=80', '2026-11-18 04:22:09', '2026-11-18 04:22:09'),
-(3, 'Luna', 'cat', 'Siamese', 'female', 3, 'https://images.unsplash.com/photo-1519052537078-e6302a4968d4?w=800&q=80', '2026-11-18 04:22:09', '2026-11-18 04:22:09'),
-(4, 'Brownie', 'dog', 'Golden Retriever', 'male', 2, 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=800&q=80', '2026-11-18 04:22:09', '2026-11-18 04:22:09'),
-(5, 'Max', 'dog', 'Beagle', 'male', 1, 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=800&q=80', '2026-11-18 04:22:09', '2026-11-18 04:22:09'),
-(6, 'Bella', 'dog', 'Poodle', 'female', 4, 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=80', '2026-11-18 04:22:09', '2026-11-18 04:22:09');
+INSERT INTO `adoption_pet` (`adoption_pet_id`, `adoption_pet_name`, `species`, `breed`, `sex`, `age`, `image`, `created_at`, `updated_at`, `status`) VALUES
+(8, 'Mark', 'dog', 'Aspin', 'male', 1, 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=800&q=80', '2026-11-22 15:50:24', '2026-11-22 15:50:24', 'available');
 
 -- --------------------------------------------------------
 
@@ -135,12 +131,7 @@ CREATE TABLE `adoption_pet_information` (
 --
 
 INSERT INTO `adoption_pet_information` (`adoption_pet_id_info`, `adoption_pet_id`, `description`, `health_condition`, `behavior_details`, `rescue_history`, `created_at`, `updated_at`) VALUES
-(1, 1, NULL, 'Healthy, Vaccinated', 'Calm and cuddly, loves to sleep', 'Rescued from street in Manila', '2026-11-18 04:22:09', '2026-11-18 04:22:09'),
-(2, 2, NULL, 'Healthy, Vaccinated', 'Playful and curious, loves toys', 'Surrendered by previous owner', '2026-11-18 04:22:09', '2026-11-18 04:22:09'),
-(3, 3, NULL, 'Healthy, Needs check-up', 'Gentle and quiet, good with kids', 'Found abandoned in a park', '2026-11-18 04:22:09', '2026-11-18 04:22:09'),
-(4, 4, NULL, 'Healthy, Vaccinated', 'Energetic and loyal, loves fetch', 'Rescued from flood area', '2026-11-18 04:22:09', '2026-11-18 04:22:09'),
-(5, 5, NULL, 'Healthy, Vaccinated', 'Friendly and smart, good with other dogs', 'Found wandering in barangay', '2026-11-18 04:22:09', '2026-11-18 04:22:09'),
-(6, 6, NULL, 'Healthy, Vaccinated', 'Sweet and obedient, loves walks', 'Surrendered due to owner moving abroad', '2026-11-18 04:22:09', '2026-11-18 04:22:09');
+(8, 8, NULL, 'Healthy, Vaccinated', 'dfgsd', 'fsdfsd', '2026-11-22 15:50:24', '2026-11-22 15:50:24');
 
 -- --------------------------------------------------------
 
@@ -167,63 +158,6 @@ INSERT INTO `care_service` (`service_id`, `service_name`, `service_price`) VALUE
 -- --------------------------------------------------------
 
 --
--- Table structure for table `care_service_record`
---
-
-CREATE TABLE `care_service_record` (
-  `record_id` int UNSIGNED NOT NULL,
-  `request_id` int UNSIGNED NOT NULL,
-  `notes` text,
-  `record_date` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `diagnostic_care_record`
---
-
--- :: START OPTIONAL DIAGNOSTIC CARE DETAILS
-CREATE TABLE `diagnostic_care_record` (
-  `id` int UNSIGNED NOT NULL,
-  `record_id` int UNSIGNED NOT NULL,
-  `test_type` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `test_result` text,
-  `diagnosis` text
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
--- :: END OPTIONAL DIAGNOSTIC CARE DETAILS
-
--- --------------------------------------------------------
-
---
--- Table structure for table `general_care_record`
---
-
--- :: START OPTIONAL GENERAL CARE DETAILS
-CREATE TABLE `general_care_record` (
-  `id` int UNSIGNED NOT NULL,
-  `record_id` int UNSIGNED NOT NULL,
-  `checkup_details` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
--- :: END OPTIONAL GENERAL CARE DETAILS
-
--- --------------------------------------------------------
-
---
--- Table structure for table `hygiene_care_record`
---
-
--- :: START OPTIONAL HYGIENE CARE DETAILS
-CREATE TABLE `hygiene_care_record` (
-  `id` int UNSIGNED NOT NULL,
-  `record_id` int UNSIGNED NOT NULL,
-  `cleaning_type` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
--- :: END OPTIONAL HYGIENE CARE DETAILS
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `pet`
 --
 
@@ -237,21 +171,14 @@ CREATE TABLE `pet` (
   `sex` enum('Male','Female') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- --------------------------------------------------------
-
 --
--- Table structure for table `preventive_care_record`
+-- Dumping data for table `pet`
 --
 
--- :: START OPTIONAL PREVENTIVE CARE DETAILS
-CREATE TABLE `preventive_care_record` (
-  `id` int UNSIGNED NOT NULL,
-  `record_id` int UNSIGNED NOT NULL,
-  `care_type` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `drug_type` varchar(100) DEFAULT NULL,
-  `dose_number` tinyint UNSIGNED DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
--- :: END OPTIONAL PREVENTIVE CARE DETAILS
+INSERT INTO `pet` (`pet_id`, `account_id`, `pet_name`, `species`, `breed`, `age`, `sex`) VALUES
+(1, 5, 'Mark', 'Dog', 'Aspin', 12, 'Male'),
+(2, 5, 'Mark', 'Cat', 'Aspin', 1, 'Male'),
+(3, 2, 'Sofhia', 'Dog', 'Aspin', 1, 'Female');
 
 -- --------------------------------------------------------
 
@@ -260,7 +187,7 @@ CREATE TABLE `preventive_care_record` (
 --
 
 CREATE TABLE `service_request` (
-  `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `status` varchar(50) NOT NULL DEFAULT 'Pending',
   `request_id` int UNSIGNED NOT NULL,
   `pet_id` int UNSIGNED NOT NULL,
   `service_id` int UNSIGNED NOT NULL,
@@ -317,46 +244,11 @@ ALTER TABLE `care_service`
   ADD PRIMARY KEY (`service_id`);
 
 --
--- Indexes for table `care_service_record`
---
-ALTER TABLE `care_service_record`
-  ADD PRIMARY KEY (`record_id`),
-  ADD KEY `fk_record_request` (`request_id`);
-
---
--- Indexes for table `diagnostic_care_record`
---
-ALTER TABLE `diagnostic_care_record`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_diagnostic_record` (`record_id`);
-
---
--- Indexes for table `general_care_record`
---
-ALTER TABLE `general_care_record`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_general_record` (`record_id`);
-
---
--- Indexes for table `hygiene_care_record`
---
-ALTER TABLE `hygiene_care_record`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_hygiene_record` (`record_id`);
-
---
 -- Indexes for table `pet`
 --
 ALTER TABLE `pet`
   ADD PRIMARY KEY (`pet_id`),
   ADD KEY `fk_pet_owner` (`account_id`);
-
---
--- Indexes for table `preventive_care_record`
---
-ALTER TABLE `preventive_care_record`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_preventive_record` (`record_id`);
 
 --
 -- Indexes for table `service_request`
@@ -374,31 +266,31 @@ ALTER TABLE `service_request`
 -- AUTO_INCREMENT for table `account`
 --
 ALTER TABLE `account`
-  MODIFY `account_id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `account_id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `adoption_application`
 --
 ALTER TABLE `adoption_application`
-  MODIFY `application_id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `application_id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `adoption_application_details`
 --
 ALTER TABLE `adoption_application_details`
-  MODIFY `detail_id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `detail_id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `adoption_pet`
 --
 ALTER TABLE `adoption_pet`
-  MODIFY `adoption_pet_id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `adoption_pet_id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `adoption_pet_information`
 --
 ALTER TABLE `adoption_pet_information`
-  MODIFY `adoption_pet_id_info` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `adoption_pet_id_info` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `care_service`
@@ -407,46 +299,16 @@ ALTER TABLE `care_service`
   MODIFY `service_id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `care_service_record`
---
-ALTER TABLE `care_service_record`
-  MODIFY `record_id` int UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `diagnostic_care_record`
---
-ALTER TABLE `diagnostic_care_record`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `general_care_record`
---
-ALTER TABLE `general_care_record`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `hygiene_care_record`
---
-ALTER TABLE `hygiene_care_record`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `pet`
 --
 ALTER TABLE `pet`
-  MODIFY `pet_id` int UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `preventive_care_record`
---
-ALTER TABLE `preventive_care_record`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `pet_id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `service_request`
 --
 ALTER TABLE `service_request`
-  MODIFY `request_id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `request_id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables
@@ -472,40 +334,10 @@ ALTER TABLE `adoption_pet_information`
   ADD CONSTRAINT `fk_info_pet` FOREIGN KEY (`adoption_pet_id`) REFERENCES `adoption_pet` (`adoption_pet_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `care_service_record`
---
-ALTER TABLE `care_service_record`
-  ADD CONSTRAINT `fk_record_request` FOREIGN KEY (`request_id`) REFERENCES `service_request` (`request_id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `diagnostic_care_record`
---
-ALTER TABLE `diagnostic_care_record`
-  ADD CONSTRAINT `fk_diagnostic_record` FOREIGN KEY (`record_id`) REFERENCES `care_service_record` (`record_id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `general_care_record`
---
-ALTER TABLE `general_care_record`
-  ADD CONSTRAINT `fk_general_record` FOREIGN KEY (`record_id`) REFERENCES `care_service_record` (`record_id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `hygiene_care_record`
---
-ALTER TABLE `hygiene_care_record`
-  ADD CONSTRAINT `fk_hygiene_record` FOREIGN KEY (`record_id`) REFERENCES `care_service_record` (`record_id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
 -- Constraints for table `pet`
 --
 ALTER TABLE `pet`
   ADD CONSTRAINT `fk_pet_owner` FOREIGN KEY (`account_id`) REFERENCES `account` (`account_id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `preventive_care_record`
---
-ALTER TABLE `preventive_care_record`
-  ADD CONSTRAINT `fk_preventive_record` FOREIGN KEY (`record_id`) REFERENCES `care_service_record` (`record_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `service_request`

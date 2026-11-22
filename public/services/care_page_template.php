@@ -6,10 +6,9 @@ if (!$careAuth->isLogin()) {
     header('Location: ../login.php');
     exit();
 }
-if (strtolower((string) ($_SESSION['user_role'] ?? 'customer')) !== 'customer') {
-    header('Location: ../index.php');
-    exit();
-}
+// :: START CARE PAGE VIEW ACCESS
+$canSubmitCareRequest = strtolower((string) ($_SESSION['user_role'] ?? '')) === 'customer';
+// :: END CARE PAGE VIEW ACCESS
 if (!isset($carePage) || !is_array($carePage)) {
     http_response_code(404);
     exit();
@@ -21,6 +20,8 @@ $careFormValues = [];
 $careModalStep = 1;
 
 if (
+    $canSubmitCareRequest
+    &&
     ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST'
     && ($_POST['form_action'] ?? '') === 'submit_care_request'
 ) {
@@ -85,16 +86,18 @@ $escapeCareValue = static fn($value): string => htmlspecialchars((string) ($valu
                 </p>
                 <div class="mt-8 flex flex-wrap items-center gap-3">
 
-                    <!-- :: START CARE MODAL HERO BUTTON -->
-                    <button data-modal-target="care-modal" data-modal-toggle="care-modal"
-                        class="inline-flex items-center gap-2 rounded-xl bg-tertiary px-6 py-3.5 text-sm font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-primary">
-                        Book now
-                        <i class="bx bx-arrow-up-right text-lg" aria-hidden="true"></i>
-                    </button>
-                    <!-- :: END CARE MODAL HERO BUTTON -->
+                    <!-- :: START CUSTOMER CARE BOOKING BUTTON -->
+                    <?php if ($canSubmitCareRequest): ?>
+                        <button data-modal-target="care-modal" data-modal-toggle="care-modal"
+                            class="inline-flex items-center gap-2 rounded-xl bg-tertiary px-6 py-3.5 text-sm font-bold text-white shadow-lg hover:rounded-none hover:bg-primary transition-all duration-200">
+                            Book now
+                            <i class="bx bx-arrow-up-right text-lg" aria-hidden="true"></i>
+                        </button>
+                    <?php endif; ?>
+                    <!-- :: END CUSTOMER CARE BOOKING BUTTON -->
 
                     <a href="#packages"
-                        class="inline-flex items-center gap-2 rounded-xl border border-border bg-card-outer px-6 py-3.5 text-sm font-bold text-text transition hover:border-primary hover:text-primary">Explore
+                        class="inline-flex items-center gap-2 rounded-xl border border-border bg-card-outer px-6 py-3.5 text-sm font-bold text-text hover:border-primary hover:text-primary hover:rounded-none transition-all duration-200">Explore
                         packages
                     </a>
                 </div>
@@ -189,136 +192,152 @@ $escapeCareValue = static fn($value): string => htmlspecialchars((string) ($valu
                 <div aria-hidden="true"
                     class="absolute -right-10 -top-20 h-64 w-64 rounded-full border-35 border-white/10"></div>
 
-                <!-- :: START APPOINTMENT CTA AND MODAL -->
-                <div class="relative max-w-2xl">
-                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-secondary">Give your pet the care they
-                        deserve</p>
-                    <h2 class="mt-3 text-2xl font-bold sm:text-3xl">
-                        Ready to schedule <?= htmlspecialchars($carePage['shortName'], ENT_QUOTES, 'UTF-8') ?>?
-                    </h2>
-                    <p class="mt-3 text-sm leading-7 text-white/85">
-                        Request an appointment and our team will help you find the right time for your pet.
+                <!-- :: START INFORMATIONAL CARE CTA -->
+                <article class="relative max-w-3xl">
+                    <!-- :: START SHORT CARE CTA COPY -->
+                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-secondary">Pet care</p>
+                    <h2 class="mt-3 text-2xl font-bold sm:text-3xl">Care that fits your pet.</h2>
+                    <p class="mt-3 text-sm leading-7 text-white/90">
+                        Talk with our team about your pet’s needs.
                     </p>
-                </div>
+                    <!-- :: END SHORT CARE CTA COPY -->
+                </article>
+                <!-- :: END INFORMATIONAL CARE CTA -->
 
-                <!-- :: START CARE MODAL CTA BUTTON -->
-                <button data-modal-target="care-modal" data-modal-toggle="care-modal"
-                    class="relative inline-flex w-fit shrink-0 items-center gap-2 rounded-xl bg-card-outer px-6 py-3.5 text-sm font-bold text-text transition hover:-translate-y-0.5 hover:bg-secondary"
-                    type="button">
-                    Request an appointment <i class="bx bx-arrow-up-right text-lg" aria-hidden="true"></i>
-                </button>
-                <!-- :: END CARE MODAL CTA BUTTON -->
-
-                <!-- :: START CARE APPOINTMENT MODAL -->
-                <div id="care-modal" aria-hidden="true" role="dialog" aria-modal="true"
-                    aria-labelledby="care-modal-title"
-                    class="hidden fixed inset-0 z-1000000 items-center justify-center overflow-y-auto bg-text/60 p-4 backdrop-blur-sm">
-                    <div class="relative my-auto w-full max-w-2xl rounded-3xl border border-border bg-card-outer p-5 shadow-2xl sm:p-8">
-                        <div class="mb-6 flex items-start justify-between gap-4 border-b border-border pb-5">
-                            <div>
-                                <p class="text-xs font-bold uppercase tracking-[0.18em] text-tertiary">Pet care appointment</p>
-                                <h2 id="care-modal-title" class="mt-2 text-2xl font-bold text-text sm:text-3xl">Register the Pet</h2>
-                                <p class="mt-2 text-sm text-muted">Step <span id="care-step-number">1</span> of 2</p>
+                <!-- :: START CUSTOMER CARE MODAL ACCESS -->
+                <?php if ($canSubmitCareRequest): ?>
+                    <!-- :: START CARE APPOINTMENT MODAL -->
+                    <div id="care-modal" aria-hidden="true" role="dialog" aria-modal="true"
+                        aria-labelledby="care-modal-title"
+                        class="hidden fixed inset-0 z-1000000 items-center justify-center overflow-y-auto bg-text/60 p-4 backdrop-blur-sm">
+                        <div
+                            class="relative my-auto w-full max-w-2xl rounded-3xl border border-border bg-card-outer p-5 shadow-2xl sm:p-8">
+                            <div class="mb-6 flex items-start justify-between gap-4 border-b border-border pb-5">
+                                <div>
+                                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-tertiary">Pet care
+                                        appointment</p>
+                                    <h2 id="care-modal-title" class="mt-2 text-2xl font-bold text-text sm:text-3xl">Register
+                                        the Pet</h2>
+                                    <p class="mt-2 text-sm text-muted">Step <span id="care-step-number">1</span> of 2</p>
+                                </div>
+                                <button type="button" data-care-modal-close aria-label="Close pet registration"
+                                    class="flex size-11 shrink-0 items-center justify-center rounded-xl border border-border text-muted transition hover:bg-card-inner hover:text-text">
+                                    <i class="bx bx-x text-2xl" aria-hidden="true"></i>
+                                </button>
                             </div>
-                            <button type="button" data-care-modal-close aria-label="Close pet registration"
-                                class="flex size-11 shrink-0 items-center justify-center rounded-xl border border-border text-muted transition hover:bg-card-inner hover:text-text">
-                                <i class="bx bx-x text-2xl" aria-hidden="true"></i>
-                            </button>
+
+                            <?php if ($careRequestError !== ''): ?>
+                                <p role="alert"
+                                    class="mb-5 rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary-hover">
+                                    <?= $escapeCareValue($careRequestError) ?>
+                                </p>
+                            <?php endif; ?>
+
+                            <form id="care-request-form" method="post" novalidate>
+                                <input type="hidden" name="form_action" value="submit_care_request">
+
+                                <!-- :: START REGISTER PET STEP -->
+                                <section data-care-step="1">
+                                    <div class="grid gap-5 sm:grid-cols-2">
+                                        <div class="sm:col-span-2">
+                                            <label for="care-pet-name"
+                                                class="mb-2 block text-sm font-semibold text-text">Pet name</label>
+                                            <input id="care-pet-name" name="pet_name" type="text" maxlength="100"
+                                                value="<?= $escapeCareValue($careFormValues['pet_name'] ?? '') ?>"
+                                                placeholder="Enter your pet's name" required
+                                                class="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-text outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-4 focus:ring-primary/10">
+                                        </div>
+                                        <div>
+                                            <label for="care-pet-species"
+                                                class="mb-2 block text-sm font-semibold text-text">Species</label>
+                                            <select id="care-pet-species" name="species" required
+                                                class="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-text outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10">
+                                                <option value="" disabled <?= empty($careFormValues['species']) ? 'selected' : '' ?>>Select species</option>
+                                                <option value="Dog" <?= ($careFormValues['species'] ?? '') === 'Dog' ? 'selected' : '' ?>>Dog</option>
+                                                <option value="Cat" <?= ($careFormValues['species'] ?? '') === 'Cat' ? 'selected' : '' ?>>Cat</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="care-pet-breed"
+                                                class="mb-2 block text-sm font-semibold text-text">Breed</label>
+                                            <input id="care-pet-breed" name="breed" type="text" maxlength="50"
+                                                value="<?= $escapeCareValue($careFormValues['breed'] ?? '') ?>"
+                                                placeholder="Enter breed"
+                                                class="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-text outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-4 focus:ring-primary/10">
+                                        </div>
+                                        <div>
+                                            <label for="care-pet-age"
+                                                class="mb-2 block text-sm font-semibold text-text">Age</label>
+                                            <input id="care-pet-age" name="age" type="number" min="0" max="255"
+                                                inputmode="numeric"
+                                                value="<?= $escapeCareValue($careFormValues['age'] ?? '') ?>"
+                                                placeholder="Enter age" required
+                                                class="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-text outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-4 focus:ring-primary/10">
+                                        </div>
+                                        <div>
+                                            <label for="care-pet-sex"
+                                                class="mb-2 block text-sm font-semibold text-text">Sex</label>
+                                            <select id="care-pet-sex" name="sex" required
+                                                class="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-text outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10">
+                                                <option value="" disabled <?= empty($careFormValues['sex']) ? 'selected' : '' ?>>Select sex</option>
+                                                <option value="Male" <?= ($careFormValues['sex'] ?? '') === 'Male' ? 'selected' : '' ?>>Male</option>
+                                                <option value="Female" <?= ($careFormValues['sex'] ?? '') === 'Female' ? 'selected' : '' ?>>Female</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mt-8 flex justify-end">
+                                        <button type="button" id="care-next-step"
+                                            class="inline-flex items-center gap-2 rounded-xl bg-tertiary px-6 py-3 text-sm font-semibold text-white transition hover:bg-tertiary-hover">
+                                            Next <i class="bx bx-right-arrow-alt text-lg" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </section>
+                                <!-- :: END REGISTER PET STEP -->
+
+                                <!-- :: START APPOINTMENT DETAILS STEP -->
+                                <section data-care-step="2" class="hidden">
+                                    <div class="grid gap-5 sm:grid-cols-2">
+                                        <div>
+                                            <label for="care-schedule-date"
+                                                class="mb-2 block text-sm font-semibold text-text">Date to be
+                                                scheduled</label>
+                                            <input id="care-schedule-date" name="schedule_date" type="date"
+                                                value="<?= $escapeCareValue($careFormValues['schedule_date'] ?? '') ?>"
+                                                required
+                                                class="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-text outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10">
+                                        </div>
+                                        <div>
+                                            <label for="care-service-id"
+                                                class="mb-2 block text-sm font-semibold text-text">Care service</label>
+                                            <select id="care-service-id" name="service_id" required
+                                                class="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-text outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10">
+                                                <option value="" disabled <?= empty($careFormValues['service_id']) ? 'selected' : '' ?>>Select a service</option>
+                                                <option value="1" <?= (string) ($careFormValues['service_id'] ?? '') === '1' ? 'selected' : '' ?>>General</option>
+                                                <option value="2" <?= (string) ($careFormValues['service_id'] ?? '') === '2' ? 'selected' : '' ?>>Preventive</option>
+                                                <option value="3" <?= (string) ($careFormValues['service_id'] ?? '') === '3' ? 'selected' : '' ?>>Hygiene</option>
+                                                <option value="4" <?= (string) ($careFormValues['service_id'] ?? '') === '4' ? 'selected' : '' ?>>Diagnostic</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mt-8 flex flex-wrap justify-between gap-3">
+                                        <button type="button" id="care-previous-step"
+                                            class="rounded-xl border border-border bg-card-inner px-5 py-3 text-sm font-semibold text-text transition hover:bg-card-inner-hover">
+                                            Back
+                                        </button>
+                                        <button type="submit"
+                                            class="inline-flex items-center gap-2 rounded-xl bg-tertiary px-6 py-3 text-sm font-semibold text-white transition hover:bg-tertiary-hover">
+                                            Submit <i class="bx bx-check text-lg" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </section>
+                                <!-- :: END APPOINTMENT DETAILS STEP -->
+                            </form>
                         </div>
-
-                        <?php if ($careRequestError !== ''): ?>
-                            <p role="alert" class="mb-5 rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary-hover">
-                                <?= $escapeCareValue($careRequestError) ?>
-                            </p>
-                        <?php endif; ?>
-
-                        <form id="care-request-form" method="post" novalidate>
-                            <input type="hidden" name="form_action" value="submit_care_request">
-
-                            <!-- :: START REGISTER PET STEP -->
-                            <section data-care-step="1">
-                                <div class="grid gap-5 sm:grid-cols-2">
-                                    <div class="sm:col-span-2">
-                                        <label for="care-pet-name" class="mb-2 block text-sm font-semibold text-text">Pet name</label>
-                                        <input id="care-pet-name" name="pet_name" type="text" maxlength="100" value="<?= $escapeCareValue($careFormValues['pet_name'] ?? '') ?>" placeholder="Enter your pet's name" required
-                                            class="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-text outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-4 focus:ring-primary/10">
-                                    </div>
-                                    <div>
-                                        <label for="care-pet-species" class="mb-2 block text-sm font-semibold text-text">Species</label>
-                                        <select id="care-pet-species" name="species" required
-                                            class="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-text outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10">
-                                            <option value="" disabled <?= empty($careFormValues['species']) ? 'selected' : '' ?>>Select species</option>
-                                            <option value="Dog" <?= ($careFormValues['species'] ?? '') === 'Dog' ? 'selected' : '' ?>>Dog</option>
-                                            <option value="Cat" <?= ($careFormValues['species'] ?? '') === 'Cat' ? 'selected' : '' ?>>Cat</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label for="care-pet-breed" class="mb-2 block text-sm font-semibold text-text">Breed</label>
-                                        <input id="care-pet-breed" name="breed" type="text" maxlength="50" value="<?= $escapeCareValue($careFormValues['breed'] ?? '') ?>" placeholder="Enter breed"
-                                            class="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-text outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-4 focus:ring-primary/10">
-                                    </div>
-                                    <div>
-                                        <label for="care-pet-age" class="mb-2 block text-sm font-semibold text-text">Age</label>
-                                        <input id="care-pet-age" name="age" type="number" min="0" max="255" inputmode="numeric" value="<?= $escapeCareValue($careFormValues['age'] ?? '') ?>" placeholder="Enter age" required
-                                            class="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-text outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-4 focus:ring-primary/10">
-                                    </div>
-                                    <div>
-                                        <label for="care-pet-sex" class="mb-2 block text-sm font-semibold text-text">Sex</label>
-                                        <select id="care-pet-sex" name="sex" required
-                                            class="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-text outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10">
-                                            <option value="" disabled <?= empty($careFormValues['sex']) ? 'selected' : '' ?>>Select sex</option>
-                                            <option value="Male" <?= ($careFormValues['sex'] ?? '') === 'Male' ? 'selected' : '' ?>>Male</option>
-                                            <option value="Female" <?= ($careFormValues['sex'] ?? '') === 'Female' ? 'selected' : '' ?>>Female</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="mt-8 flex justify-end">
-                                    <button type="button" id="care-next-step"
-                                        class="inline-flex items-center gap-2 rounded-xl bg-tertiary px-6 py-3 text-sm font-semibold text-white transition hover:bg-tertiary-hover">
-                                        Next <i class="bx bx-right-arrow-alt text-lg" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </section>
-                            <!-- :: END REGISTER PET STEP -->
-
-                            <!-- :: START APPOINTMENT DETAILS STEP -->
-                            <section data-care-step="2" class="hidden">
-                                <div class="grid gap-5 sm:grid-cols-2">
-                                    <div>
-                                        <label for="care-schedule-date" class="mb-2 block text-sm font-semibold text-text">Date to be scheduled</label>
-                                        <input id="care-schedule-date" name="schedule_date" type="date" value="<?= $escapeCareValue($careFormValues['schedule_date'] ?? '') ?>" required
-                                            class="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-text outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10">
-                                    </div>
-                                    <div>
-                                        <label for="care-service-id" class="mb-2 block text-sm font-semibold text-text">Care service</label>
-                                        <select id="care-service-id" name="service_id" required
-                                            class="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-text outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10">
-                                            <option value="" disabled <?= empty($careFormValues['service_id']) ? 'selected' : '' ?>>Select a service</option>
-                                            <option value="1" <?= (string) ($careFormValues['service_id'] ?? '') === '1' ? 'selected' : '' ?>>General</option>
-                                            <option value="2" <?= (string) ($careFormValues['service_id'] ?? '') === '2' ? 'selected' : '' ?>>Preventive</option>
-                                            <option value="3" <?= (string) ($careFormValues['service_id'] ?? '') === '3' ? 'selected' : '' ?>>Hygiene</option>
-                                            <option value="4" <?= (string) ($careFormValues['service_id'] ?? '') === '4' ? 'selected' : '' ?>>Diagnostic</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="mt-8 flex flex-wrap justify-between gap-3">
-                                    <button type="button" id="care-previous-step"
-                                        class="rounded-xl border border-border bg-card-inner px-5 py-3 text-sm font-semibold text-text transition hover:bg-card-inner-hover">
-                                        Back
-                                    </button>
-                                    <button type="submit"
-                                        class="inline-flex items-center gap-2 rounded-xl bg-tertiary px-6 py-3 text-sm font-semibold text-white transition hover:bg-tertiary-hover">
-                                        Submit <i class="bx bx-check text-lg" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </section>
-                            <!-- :: END APPOINTMENT DETAILS STEP -->
-                        </form>
                     </div>
-                </div>
-                <!-- :: END CARE APPOINTMENT MODAL -->
+                    <!-- :: END CARE APPOINTMENT MODAL -->
 
-                <!-- :: END APPOINTMENT CTA AND MODAL -->
+                <?php endif; ?>
+                <!-- :: END CUSTOMER CARE MODAL ACCESS -->
             </div>
         </section>
         <!-- :: END CARE PAGE CTA -->
@@ -330,95 +349,97 @@ $escapeCareValue = static fn($value): string => htmlspecialchars((string) ($valu
     </footer>
     <!-- :: END SHARED CARE PAGE FOOTER -->
 
-    <script>
-        // :: START CARE MODAL SCRIPT
-        const appointmentModal = document.getElementById('care-modal');
-        const careForm = document.getElementById('care-request-form');
-        const careSteps = Array.from(document.querySelectorAll('[data-care-step]'));
-        const careStepNumber = document.getElementById('care-step-number');
+    <?php if ($canSubmitCareRequest): ?>
+        <!-- :: START CUSTOMER CARE MODAL SCRIPT -->
+        <script>
+            const appointmentModal = document.getElementById('care-modal');
+            const careForm = document.getElementById('care-request-form');
+            const careSteps = Array.from(document.querySelectorAll('[data-care-step]'));
+            const careStepNumber = document.getElementById('care-step-number');
 
-        function showCareStep(step) {
-            careSteps.forEach((section) => {
-                section.classList.toggle('hidden', Number(section.dataset.careStep) !== step);
+            function showCareStep(step) {
+                careSteps.forEach((section) => {
+                    section.classList.toggle('hidden', Number(section.dataset.careStep) !== step);
+                });
+                careStepNumber.textContent = String(step);
+            }
+
+            document.querySelectorAll('[data-modal-toggle="care-modal"]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    appointmentModal.classList.remove('hidden');
+                    appointmentModal.classList.add('flex');
+                    appointmentModal.setAttribute('aria-hidden', 'false');
+                });
             });
-            careStepNumber.textContent = String(step);
-        }
 
-        document.querySelectorAll('[data-modal-toggle="care-modal"]').forEach((button) => {
-            button.addEventListener('click', () => {
+            document.querySelectorAll('[data-care-modal-close]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    appointmentModal.classList.add('hidden');
+                    appointmentModal.classList.remove('flex');
+                    appointmentModal.setAttribute('aria-hidden', 'true');
+                });
+            });
+
+            appointmentModal.addEventListener('click', (event) => {
+                if (event.target === appointmentModal) {
+                    appointmentModal.classList.add('hidden');
+                    appointmentModal.classList.remove('flex');
+                    appointmentModal.setAttribute('aria-hidden', 'true');
+                }
+            });
+
+            document.getElementById('care-next-step').addEventListener('click', () => {
+                const firstStep = document.querySelector('[data-care-step="1"]');
+                const requiredFields = Array.from(firstStep.querySelectorAll('[required]'));
+                const firstInvalidField = requiredFields.find((field) => !field.checkValidity());
+
+                if (firstInvalidField) {
+                    firstInvalidField.reportValidity();
+                    return;
+                }
+
+                showCareStep(2);
+            });
+
+            document.getElementById('care-previous-step').addEventListener('click', () => {
+                showCareStep(1);
+            });
+
+            careForm.addEventListener('submit', (event) => {
+                const firstInvalidStep = careSteps.find((section) =>
+                    Array.from(section.querySelectorAll('[required]')).some((field) => !field.checkValidity())
+                );
+
+                if (firstInvalidStep) {
+                    event.preventDefault();
+                    const stepNumber = Number(firstInvalidStep.dataset.careStep);
+                    showCareStep(stepNumber);
+                    const firstInvalidField = Array.from(firstInvalidStep.querySelectorAll('[required]'))
+                        .find((field) => !field.checkValidity());
+                    firstInvalidField.reportValidity();
+                }
+            });
+
+            appointmentModal.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    appointmentModal.classList.add('hidden');
+                    appointmentModal.classList.remove('flex');
+                    appointmentModal.setAttribute('aria-hidden', 'true');
+                }
+            });
+
+            const scheduleDateInput = document.getElementById('care-schedule-date');
+            scheduleDateInput.min = new Date().toISOString().split('T')[0];
+
+            <?php if ($careRequestError !== ''): ?>
                 appointmentModal.classList.remove('hidden');
                 appointmentModal.classList.add('flex');
                 appointmentModal.setAttribute('aria-hidden', 'false');
-            });
-        });
-
-        document.querySelectorAll('[data-care-modal-close]').forEach((button) => {
-            button.addEventListener('click', () => {
-                appointmentModal.classList.add('hidden');
-                appointmentModal.classList.remove('flex');
-                appointmentModal.setAttribute('aria-hidden', 'true');
-            });
-        });
-
-        appointmentModal.addEventListener('click', (event) => {
-            if (event.target === appointmentModal) {
-                appointmentModal.classList.add('hidden');
-                appointmentModal.classList.remove('flex');
-                appointmentModal.setAttribute('aria-hidden', 'true');
-            }
-        });
-
-        document.getElementById('care-next-step').addEventListener('click', () => {
-            const firstStep = document.querySelector('[data-care-step="1"]');
-            const requiredFields = Array.from(firstStep.querySelectorAll('[required]'));
-            const firstInvalidField = requiredFields.find((field) => !field.checkValidity());
-
-            if (firstInvalidField) {
-                firstInvalidField.reportValidity();
-                return;
-            }
-
-            showCareStep(2);
-        });
-
-        document.getElementById('care-previous-step').addEventListener('click', () => {
-            showCareStep(1);
-        });
-
-        careForm.addEventListener('submit', (event) => {
-            const firstInvalidStep = careSteps.find((section) =>
-                Array.from(section.querySelectorAll('[required]')).some((field) => !field.checkValidity())
-            );
-
-            if (firstInvalidStep) {
-                event.preventDefault();
-                const stepNumber = Number(firstInvalidStep.dataset.careStep);
-                showCareStep(stepNumber);
-                const firstInvalidField = Array.from(firstInvalidStep.querySelectorAll('[required]'))
-                    .find((field) => !field.checkValidity());
-                firstInvalidField.reportValidity();
-            }
-        });
-
-        appointmentModal.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                appointmentModal.classList.add('hidden');
-                appointmentModal.classList.remove('flex');
-                appointmentModal.setAttribute('aria-hidden', 'true');
-            }
-        });
-
-        const scheduleDateInput = document.getElementById('care-schedule-date');
-        scheduleDateInput.min = new Date().toISOString().split('T')[0];
-
-        <?php if ($careRequestError !== ''): ?>
-            appointmentModal.classList.remove('hidden');
-            appointmentModal.classList.add('flex');
-            appointmentModal.setAttribute('aria-hidden', 'false');
-            showCareStep(<?= (int) $careModalStep ?>);
-        <?php endif; ?>
-        // :: END CARE MODAL SCRIPT
-    </script>
+                showCareStep(<?= (int) $careModalStep ?>);
+            <?php endif; ?>
+        </script>
+        <!-- :: END CUSTOMER CARE MODAL SCRIPT -->
+    <?php endif; ?>
 </body>
 
 </html>

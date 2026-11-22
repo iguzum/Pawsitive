@@ -9,7 +9,9 @@ http_response_code(404);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#fff9f0">
     <title>Page Not Found | PAWSITIVE</title>
-    <link rel="stylesheet" href="./src/output.css">
+    <!-- :: START 404 ROOT ASSET PATH -->
+    <link rel="stylesheet" href="/Pawsitive/public/src/output.css">
+    <!-- :: END 404 ROOT ASSET PATH -->
     <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
 </head>
 
@@ -22,14 +24,16 @@ http_response_code(404);
             <div
                 class="container mx-auto flex w-full flex-col items-center justify-center gap-8 px-1 text-text sm:px-5 md:flex-row md:gap-10">
                 <div class="flex w-full max-w-md flex-col gap-2 text-center md:text-left">
-                    <div class="text-7xl font-dark font-bold">404</div>
-                    <p class="text-2xl md:text-3xl font-light leading-tighter">Sorry we couldn't find this page.</p>
+                    <div class="text-7xl font-black">404</div>
+                    <p class="text-2xl font-light leading-tight md:text-3xl">Sorry, we couldn't find this page.</p>
                     <p class="mb-4 mt-2">But dont worry, you can find plenty of other things on our homepage.</p>
 
-                    <a href="../public/login.php"
-                        class="px-4 flex justify-center py-2 text-sm font-medium leading-5 shadow text-text hover:text-white hover:rounded-none transition-all duration-200 border border-transparent rounded-lg focus:outline-none bg-primary active:bg-primary hover:bg-tertiary">
-                        back to homepage
+                    <!-- :: START 404 NAVIGATION ACTIONS -->
+                    <a href="/Pawsitive/public/index.php"
+                        class="mt-2 inline-flex w-full items-center justify-center rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-text shadow-sm transition hover:bg-tertiary hover:text-white sm:w-auto">
+                        Go back to homepage
                     </a>
+                    <!-- :: END 404 NAVIGATION ACTIONS -->
                 </div>
                 <div class="w-full max-w-sm md:max-w-lg">
                     <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2395 1800"
@@ -243,6 +247,9 @@ http_response_code(404);
     </main>
     <!-- :: END RESPONSIVE 404 -->
     <!-- :: END 404 PAGE -->
+    <!-- :: START LOAD AOS FOR 404 -->
+    <?php require __DIR__ . '/../includes/aos.php'; ?>
+    <!-- :: END LOAD AOS FOR 404 -->
 </body>
 
 </html>

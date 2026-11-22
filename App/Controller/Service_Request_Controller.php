@@ -4,8 +4,26 @@ namespace App\Controller;
 use App\Model\Service_Request;
 
 // :: START SERVICE REQUEST CONTROLLER
-class Service_Request_Controller
+// :: START SERVICE REQUEST STATUS CONTROLLER OVERRIDE
+class Service_Request_Controller extends Abstract_Status_Controller
+    // :: END SERVICE REQUEST STATUS CONTROLLER OVERRIDE
 {
+    private Service_Request $serviceRequest;
+
+    // :: START SERVICE REQUEST CONTROLLER SETUP
+    public function __construct(?Service_Request $serviceRequest = null)
+    {
+        $this->serviceRequest = $serviceRequest ?? new Service_Request();
+    }
+    // :: END SERVICE REQUEST CONTROLLER SETUP
+
+    // :: START SERVICE REQUEST STATUS OVERRIDE
+    public function updateStatus(int $recordId, string $status): bool
+    {
+        return $this->serviceRequest->updateStatus($recordId, $status);
+    }
+    // :: END SERVICE REQUEST STATUS OVERRIDE
+
     public function submitRequest(array $form, int $accountId): array
     {
         if ($accountId < 1) {

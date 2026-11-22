@@ -23,6 +23,15 @@ if (
     $statusMessage = $dashboardController->updateStaffStatus($_POST);
 }
 
+// :: START STAFF DELETE ACTION
+if (
+    ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST'
+    && in_array($_POST['form_action'] ?? '', ['delete_adoption', 'delete_service_request'], true)
+) {
+    $statusMessage = $dashboardController->removeStaffRecord($_POST);
+}
+// :: END STAFF DELETE ACTION
+
 $dashboardData = $dashboardController->getStaffDashboard();
 $escapeValue = static fn($value): string => htmlspecialchars((string) ($value ?? ''), ENT_QUOTES, 'UTF-8');
 // :: END STAFF DASHBOARD ACCESS
@@ -108,6 +117,16 @@ $escapeValue = static fn($value): string => htmlspecialchars((string) ($value ??
                                         Save
                                     </button>
                                 </form>
+                                <!-- :: START REMOVE ADOPTION APPLICATION BUTTON -->
+                                <form method="post" class="staff-delete-form">
+                                    <input type="hidden" name="form_action" value="delete_adoption">
+                                    <input type="hidden" name="record_id" value="<?= (int) $application['application_id'] ?>">
+                                    <button type="submit" class="inline-flex items-center gap-2 rounded-xl border border-red-300 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50">
+                                        <i class="bx bx-trash" aria-hidden="true"></i>
+                                        Remove
+                                    </button>
+                                </form>
+                                <!-- :: END REMOVE ADOPTION APPLICATION BUTTON -->
                             </div>
                             <!-- :: END ADOPTION APPLICATION VIEW AND STATUS -->
 
@@ -248,24 +267,38 @@ $escapeValue = static fn($value): string => htmlspecialchars((string) ($value ??
                                 </p>
                             </div>
 
-                            <form method="post" class="flex flex-wrap items-center gap-2">
-                                <input type="hidden" name="form_action" value="update_status">
-                                <input type="hidden" name="record_type" value="service">
-                                <input type="hidden" name="record_id" value="<?= (int) $request['request_id'] ?>">
-                                <?php $requestStatus = $request['status'] ?: 'Pending'; ?>
-                                <select name="status" aria-label="Service request status"
-                                    class="rounded-xl border border-border bg-background px-3 py-2 text-sm text-text">
-                                    <?php foreach (['Pending', 'Approved', 'Rejected'] as $status): ?>
-                                        <option value="<?= $status ?>" <?= $requestStatus === $status ? 'selected' : '' ?>>
-                                            <?= $status ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <button type="submit"
-                                    class="rounded-xl bg-tertiary px-4 py-2 text-sm font-semibold text-white hover:bg-primary">
-                                    Save
-                                </button>
-                            </form>
+                            <!-- :: START RIGHT ALIGNED CARE REQUEST ACTIONS -->
+                            <div class="flex flex-wrap items-center gap-2 sm:ml-auto sm:justify-end">
+                                <form method="post" class="flex flex-wrap items-center gap-2">
+                                    <input type="hidden" name="form_action" value="update_status">
+                                    <input type="hidden" name="record_type" value="service">
+                                    <input type="hidden" name="record_id" value="<?= (int) $request['request_id'] ?>">
+                                    <?php $requestStatus = $request['status'] ?: 'Pending'; ?>
+                                    <select name="status" aria-label="Service request status"
+                                        class="rounded-xl border border-border bg-background px-3 py-2 text-sm text-text">
+                                        <?php foreach (['Pending', 'Approved', 'Rejected'] as $status): ?>
+                                            <option value="<?= $status ?>" <?= $requestStatus === $status ? 'selected' : '' ?>>
+                                                <?= $status ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <button type="submit"
+                                        class="rounded-xl bg-tertiary px-4 py-2 text-sm font-semibold text-white hover:bg-primary">
+                                        Save
+                                    </button>
+                                </form>
+                                <!-- :: START REMOVE CARE APPOINTMENT BUTTON -->
+                                <form method="post" class="staff-delete-form">
+                                    <input type="hidden" name="form_action" value="delete_service_request">
+                                    <input type="hidden" name="record_id" value="<?= (int) $request['request_id'] ?>">
+                                    <button type="submit" class="inline-flex items-center gap-2 rounded-xl border border-red-300 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50">
+                                        <i class="bx bx-trash" aria-hidden="true"></i>
+                                        Remove
+                                    </button>
+                                </form>
+                                <!-- :: END REMOVE CARE APPOINTMENT BUTTON -->
+                            </div>
+                            <!-- :: END RIGHT ALIGNED CARE REQUEST ACTIONS -->
                         </article>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -273,8 +306,71 @@ $escapeValue = static fn($value): string => htmlspecialchars((string) ($value ??
         </section>
     </main>
 
+    <!-- :: START STAFF DELETE CONFIRMATION MODAL -->
+    <div id="staff-delete-modal" aria-hidden="true" role="dialog" aria-modal="true"
+        aria-labelledby="staff-delete-title"
+        class="hidden fixed inset-0 z-1000000 items-center justify-center bg-text/60 p-4 backdrop-blur-sm">
+        <section class="w-full max-w-md rounded-3xl border border-border bg-card-outer p-6 shadow-2xl">
+            <div class="mx-auto flex size-14 items-center justify-center rounded-full bg-red-100 text-red-600">
+                <i class="bx bx-trash text-2xl" aria-hidden="true"></i>
+            </div>
+            <h2 id="staff-delete-title" class="mt-4 text-center text-xl font-bold text-text">Remove this record?</h2>
+            <p id="staff-delete-message" class="mt-2 text-center text-sm leading-6 text-muted">
+                This action cannot be undone.
+            </p>
+            <div class="mt-6 flex justify-center gap-3">
+                <button id="staff-delete-cancel" type="button"
+                    class="rounded-xl border border-border px-5 py-2.5 text-sm font-semibold text-text transition hover:bg-card-inner">
+                    No, cancel
+                </button>
+                <button id="staff-delete-confirm" type="button"
+                    class="rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700">
+                    Yes, remove
+                </button>
+            </div>
+        </section>
+    </div>
+    <!-- :: END STAFF DELETE CONFIRMATION MODAL -->
+
     <!-- :: START ADOPTION APPLICATION MODAL SCRIPT -->
     <script>
+        // :: START STAFF DELETE CONFIRMATION HANDLER
+        const staffDeleteModal = document.getElementById('staff-delete-modal');
+        const staffDeleteMessage = document.getElementById('staff-delete-message');
+        let pendingDeleteForm = null;
+
+        document.querySelectorAll('.staff-delete-form').forEach((form) => {
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                pendingDeleteForm = form;
+
+                const action = form.querySelector('[name="form_action"]').value;
+                staffDeleteMessage.textContent = action === 'delete_adoption'
+                    ? 'This adoption application and its saved details will be deleted permanently.'
+                    : 'This appointment and its related care records will be deleted permanently.';
+
+                staffDeleteModal.classList.remove('hidden');
+                staffDeleteModal.classList.add('flex');
+                staffDeleteModal.setAttribute('aria-hidden', 'false');
+            });
+        });
+
+        function closeStaffDeleteModal() {
+            staffDeleteModal.classList.add('hidden');
+            staffDeleteModal.classList.remove('flex');
+            staffDeleteModal.setAttribute('aria-hidden', 'true');
+            pendingDeleteForm = null;
+        }
+
+        document.getElementById('staff-delete-cancel').addEventListener('click', closeStaffDeleteModal);
+        staffDeleteModal.addEventListener('click', (event) => {
+            if (event.target === staffDeleteModal) closeStaffDeleteModal();
+        });
+        document.getElementById('staff-delete-confirm').addEventListener('click', () => {
+            if (pendingDeleteForm) pendingDeleteForm.submit();
+        });
+        // :: END STAFF DELETE CONFIRMATION HANDLER
+
         document.querySelectorAll('[data-application-open]').forEach((button) => {
             button.addEventListener('click', () => {
                 const modal = document.getElementById(button.dataset.applicationOpen);

@@ -89,17 +89,113 @@ class Adoption_Application
         }
 
         $db = $this->createConnection()->connect();
+        // :: START UPDATE APPLICATION AND PET AVAILABILITY
+        try {
+            $db->beginTransaction();
+
+            $applicationStmt = $db->prepare(
+                'SELECT pet_id
+                FROM adoption_application
+                WHERE application_id = :application_id
+                FOR UPDATE'
+            );
+            $applicationStmt->execute(['application_id' => $applicationId]);
+            $application = $applicationStmt->fetch();
+
+            if (!$application) {
+                $db->rollBack();
+                return false;
+            }
+
+            $petId = (int) $application['pet_id'];
+
+            $petLockStmt = $db->prepare(
+                'SELECT adoption_pet_id
+                FROM adoption_pet
+                WHERE adoption_pet_id = :pet_id
+                FOR UPDATE'
+            );
+            $petLockStmt->execute(['pet_id' => $petId]);
+
+            if ($status === 'Approved') {
+                $otherApprovedStmt = $db->prepare(
+                    "SELECT application_id
+                    FROM adoption_application
+                    WHERE pet_id = :pet_id
+                        AND status = 'Approved'
+                        AND application_id != :application_id
+                    LIMIT 1"
+                );
+                $otherApprovedStmt->execute([
+                    'pet_id' => $petId,
+                    'application_id' => $applicationId,
+                ]);
+
+                if ($otherApprovedStmt->fetch()) {
+                    $db->rollBack();
+                    return false;
+                }
+            }
+
+            $updateApplication = $db->prepare(
+                'UPDATE adoption_application
+                SET status = :status
+                WHERE application_id = :application_id'
+            );
+            $updateApplication->execute([
+                'status' => $status,
+                'application_id' => $applicationId,
+            ]);
+
+            if ($status === 'Approved') {
+                $petStatus = 'adopted';
+            } else {
+                $approvedApplicationStmt = $db->prepare(
+                    "SELECT application_id
+                    FROM adoption_application
+                    WHERE pet_id = :pet_id AND status = 'Approved'
+                    LIMIT 1"
+                );
+                $approvedApplicationStmt->execute(['pet_id' => $petId]);
+                $petStatus = $approvedApplicationStmt->fetch() ? 'adopted' : 'available';
+            }
+
+            $updatePet = $db->prepare(
+                'UPDATE adoption_pet
+                SET status = :status
+                WHERE adoption_pet_id = :pet_id'
+            );
+            $updatePet->execute([
+                'status' => $petStatus,
+                'pet_id' => $petId,
+            ]);
+
+            $db->commit();
+            return true;
+        } catch (\Exception $error) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+
+            throw $error;
+        }
+        // :: END UPDATE APPLICATION AND PET AVAILABILITY
+    }
+
+    // :: START DELETE ADOPTION APPLICATION
+    public function deleteApplication(int $applicationId): bool
+    {
+        $db = $this->createConnection()->connect();
         $stmt = $db->prepare(
-            'UPDATE adoption_application
-            SET status = :status
+            'DELETE FROM adoption_application
             WHERE application_id = :application_id'
         );
 
-        return $stmt->execute([
-            'status' => $status,
-            'application_id' => $applicationId,
-        ]);
+        $stmt->execute(['application_id' => $applicationId]);
+
+        return $stmt->rowCount() > 0;
     }
+    // :: END DELETE ADOPTION APPLICATION
     // :: END APPLICATION LISTS AND STATUS
 
     public function submitApplication(int $accountId, array $application): void

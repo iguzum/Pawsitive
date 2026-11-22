@@ -36,13 +36,8 @@ if (!$auth->isLogin()) {
         <!-- <div class="absolute inset-0 bg-text/60"></div> -->
 
         <div class="relative z-10 mx-auto w-full max-w-350 text-center">
-            <span
-                class="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/10 px-4 py-2 text-sm font-semibold text-white backdrop-blur-sm">
-                <i class="bx bx-heart text-lg" aria-hidden="true"></i>
-                A kinder way to find a companion
-            </span>
-
-            <h1 class="mx-auto mt-6 max-w-4xl text-4xl font-bold leading-tight text-tertiary sm:text-5xl md:text-7xl">
+            <h1
+                class="mx-auto mt-6 lg:mt-12 max-w-4xl text-4xl font-bold leading-tight text-tertiary sm:text-5xl md:text-7xl">
                 About PAWSITIVE
             </h1>
 
@@ -52,7 +47,7 @@ if (!$auth->isLogin()) {
             </p>
 
             <a href="../index.php#pets"
-                class="mt-8 inline-flex items-center gap-2 rounded-xl bg-tertiary px-6 py-3 font-semibold text-white transition hover:bg-tertiary-hover">
+                class="mt-8 inline-flex items-center gap-2 rounded-xl bg-tertiary px-6 py-3 font-semibold text-white hover:bg-primary hover:rounded-none transition-all duration-200">
                 Meet the pets
                 <i class="bx bx-arrow-up-right text-lg" aria-hidden="true"></i>
             </a>
@@ -178,8 +173,8 @@ if (!$auth->isLogin()) {
                     </blockquote>
 
                     <div class="mt-6 border-t border-border pt-4">
-                        <p class="font-bold text-text">Sample adopter</p>
-                        <p class="mt-1 text-sm text-muted">Adopter story placeholder</p>
+                        <p class="font-bold text-text">Mark Kendra</p>
+                        <p class="mt-1 text-sm text-muted">Adopter</p>
                     </div>
                 </article>
 
@@ -198,8 +193,8 @@ if (!$auth->isLogin()) {
                     </blockquote>
 
                     <div class="mt-6 border-t border-border pt-4">
-                        <p class="font-bold text-text">Sample adopter</p>
-                        <p class="mt-1 text-sm text-muted">Adopter story placeholder</p>
+                        <p class="font-bold text-text">Patrick Sterling</p>
+                        <p class="mt-1 text-sm text-muted">Adopter</p>
                     </div>
                 </article>
 
@@ -218,8 +213,8 @@ if (!$auth->isLogin()) {
                     </blockquote>
 
                     <div class="mt-6 border-t border-border pt-4">
-                        <p class="font-bold text-text">Sample adopter</p>
-                        <p class="mt-1 text-sm text-muted">Adopter story placeholder</p>
+                        <p class="font-bold text-text">Jerico Smith</p>
+                        <p class="mt-1 text-sm text-muted">Adopter</p>
                     </div>
                 </article>
             </div>

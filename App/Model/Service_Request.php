@@ -22,21 +22,8 @@ class Service_Request
 
     public function addRequest(): ?array
     {
-        $connection = $this->createConnection();
-
-        $careRecord = match ($this->service_id) {
-            1 => new General_Care_Record($connection),
-            2 => new Preventive_Care_Record($connection),
-            3 => new Hygiene_Care_Record($connection),
-            4 => new Diagnostic_Care_Record($connection),
-            default => null,
-        };
-
-        if ($careRecord === null) {
-            return null;
-        }
-
-        $db = $connection->connect();
+        // :: START SAVE SCHEDULER REQUEST ONLY
+        $db = $this->createConnection()->connect();
 
         // :: START EXCEPTION HANDLING
         try {
@@ -65,14 +52,11 @@ class Service_Request
             ]);
             $requestId = (int) $db->lastInsertId();
 
-            $recordId = $careRecord->addRecord($requestId);
-
             $db->commit();
 
             return [
                 'pet_id' => $petId,
                 'request_id' => $requestId,
-                'record_id' => $recordId,
             ];
         } catch (\Exception $error) {
             if ($db->inTransaction()) {
@@ -82,6 +66,7 @@ class Service_Request
             throw $error;
         }
         // :: END EXCEPTION HANDLING
+        // :: END SAVE SCHEDULER REQUEST ONLY
     }
 
     // :: START SERVICE REQUEST LISTS AND STATUS
@@ -154,6 +139,21 @@ class Service_Request
             'request_id' => $requestId,
         ]);
     }
+
+    // :: START DELETE CARE SERVICE REQUEST
+    public function deleteRequest(int $requestId): bool
+    {
+        $db = $this->createConnection()->connect();
+        $stmt = $db->prepare(
+            'DELETE FROM service_request
+            WHERE request_id = :request_id'
+        );
+
+        $stmt->execute(['request_id' => $requestId]);
+
+        return $stmt->rowCount() > 0;
+    }
+    // :: END DELETE CARE SERVICE REQUEST
     // :: END SERVICE REQUEST LISTS AND STATUS
 
     private function createConnection(): Connection

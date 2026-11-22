@@ -196,34 +196,30 @@ function customerSchedulePath(): string
     <div class="order-2 ml-auto flex items-center gap-2 lg:order-3 lg:ml-0 lg:flex-1 lg:justify-end">
 
         <span class="h-6 w-px bg-border"></span>
-
         <!-- :: START SIGN IN AND LOGOUT ACTION -->
         <?php if (isset($_SESSION['user_id'])): ?>
             <!-- :: START ROLE DASHBOARD NAVIGATION -->
             <?php $headerRole = strtolower((string) ($_SESSION['user_role'] ?? 'customer')); ?>
             <?php if ($headerRole === 'admin'): ?>
-                <a href="<?= roleDashboardPath('admin') ?>"
-                    class="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-text transition-colors hover:bg-card-inner hover:text-primary">
-                    <i class="bx bx-grid-alt text-lg" aria-hidden="true"></i>
-                    Dashboard
+                <a href="<?= roleDashboardPath('admin') ?>" aria-label="Dashboard" title="Dashboard"
+                    class="inline-flex size-10 items-center justify-center rounded-xl text-xl text-text transition-colors hover:bg-card-inner hover:text-primary">
+                    <i class="bx bx-dashboard text-lg" aria-hidden="true"></i>
                 </a>
             <?php elseif ($headerRole === 'staff'): ?>
-                <a href="<?= roleDashboardPath('staff') ?>"
-                    class="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-text transition-colors hover:bg-card-inner hover:text-primary">
-                    <i class="bx bx-grid-alt text-lg" aria-hidden="true"></i>
-                    Dashboard
+                <a href="<?= roleDashboardPath('staff') ?>" aria-label="Dashboard" title="Dashboard"
+                    class="inline-flex size-10 items-center justify-center rounded-xl text-xl text-text transition-colors hover:bg-card-inner hover:text-primary">
+                    <i class="bx bx-dashboard text-lg" aria-hidden="true"></i>
                 </a>
             <?php elseif ($headerRole === 'customer'): ?>
-                <a href="<?= customerSchedulePath() ?>"
-                    class="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-text transition-colors hover:bg-card-inner hover:text-primary">
+                <a href="<?= customerSchedulePath() ?>" aria-label="Schedule" title="Schedule"
+                    class="inline-flex size-10 items-center justify-center rounded-xl text-xl text-text transition-colors hover:bg-card-inner hover:text-primary">
                     <i class="bx bx-calendar text-lg" aria-hidden="true"></i>
-                    Schedule
                 </a>
             <?php endif; ?>
             <!-- :: END ROLE DASHBOARD NAVIGATION -->
-            <a href="<?= signOutPath() ?>"
-                class="inline-flex w-fit items-center justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-text hover:text-white hover:bg-tertiary focus-visible:outline-tertiary hover:rounded-none transition-all duration-200">
-                Logout
+            <a href="<?= signOutPath() ?>" aria-label="Logout" title="Logout"
+                class="inline-flex size-10 items-center justify-center rounded-xl bg-primary text-xl text-text transition-all duration-200 hover:rounded-none hover:bg-tertiary hover:text-white focus-visible:outline-tertiary">
+                <i class="bx bx-arrow-out-right-square-half" aria-hidden="true"></i>
             </a>
         <?php endif; ?>
         <!-- :: END SIGN IN AND LOGOUT ACTION -->
@@ -307,3 +303,8 @@ function customerSchedulePath(): string
         });
     });
 </script>
+<?php
+// :: START LOAD AOS FOR SHARED PAGES
+require __DIR__ . '/aos.php';
+// :: END LOAD AOS FOR SHARED PAGES
+?>
